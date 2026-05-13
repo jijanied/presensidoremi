@@ -2,408 +2,653 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Presensi LKP Doremi Home Music Course</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+<title>Presensi Doremi Music Course</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-  body {
-    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-    background: #f4f4f0;
-    min-height: 100vh;
-    padding: 2rem 1rem;
-    color: #1a1a2e;
-  }
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
 
-  .form-card {
-    background: #ffffff;
-    border: 1px solid #e2e0d8;
-    border-radius: 16px;
-    max-width: 560px;
-    margin: 0 auto;
-    overflow: hidden;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
-  }
+body{
+  font-family:'Poppins',sans-serif;
+  min-height:100vh;
+  overflow-x:hidden;
+  position:relative;
+  background:
+  linear-gradient(rgba(0,0,0,.45),rgba(0,0,0,.55)),
+  url('https://images.unsplash.com/photo-1511379938547-c1f69419868d?q=80&w=1600&auto=format&fit=crop');
+  background-size:cover;
+  background-position:center;
+  background-attachment:fixed;
+  padding:30px 15px;
+}
 
-  .form-header {
-    background: #1a1a2e;
-    padding: 1.75rem 1.5rem 1.5rem;
-    text-align: center;
-  }
+/* overlay blur */
 
-  .brand-row {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    margin-bottom: 6px;
-  }
+.bg-blur{
+  position:fixed;
+  inset:0;
+  backdrop-filter:blur(4px);
+  z-index:0;
+}
 
-  .brand-icon {
-    width: 36px; height: 36px;
-    background: #f5a623;
-    border-radius: 8px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 18px;
-  }
+.container{
+  position:relative;
+  z-index:2;
+  max-width:560px;
+  margin:auto;
+}
 
-  .brand-name { font-size: 20px; font-weight: 600; color: #fff; letter-spacing: 0.5px; }
-  .brand-sub  { font-size: 11px; color: #a0a0b8; letter-spacing: 1.5px; text-transform: uppercase; }
+.card{
+  background:rgba(255,255,255,.12);
+  border:1px solid rgba(255,255,255,.15);
+  backdrop-filter:blur(18px);
+  border-radius:28px;
+  overflow:hidden;
+  box-shadow:0 10px 40px rgba(0,0,0,.25);
+}
 
-  .form-body {
-    padding: 1.5rem;
-    display: flex;
-    flex-direction: column;
-    gap: 1.25rem;
-  }
+.header{
+  padding:32px 25px 24px;
+  text-align:center;
+  background:rgba(255,255,255,.05);
+  border-bottom:1px solid rgba(255,255,255,.08);
+}
 
-  .section-title {
-    font-size: 10px;
-    font-weight: 600;
-    letter-spacing: 1.2px;
-    text-transform: uppercase;
-    color: #888;
-    padding-bottom: 6px;
-    border-bottom: 1px solid #eee;
-  }
+.logo{
+  width:70px;
+  height:70px;
+  margin:auto;
+  margin-bottom:15px;
+  border-radius:20px;
+  background:linear-gradient(135deg,#f59e0b,#f97316);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:32px;
+  box-shadow:0 10px 25px rgba(0,0,0,.25);
+}
 
-  .field-group { display: flex; flex-direction: column; gap: 6px; }
+.title{
+  color:white;
+  font-size:28px;
+  font-weight:700;
+}
 
-  .field-label {
-    font-size: 13px;
-    font-weight: 500;
-    color: #555;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
+.subtitle{
+  color:rgba(255,255,255,.7);
+  font-size:13px;
+  margin-top:6px;
+}
 
-  .field-label .req { color: #e24b4a; font-size: 14px; }
+.form{
+  padding:25px;
+}
 
-  input[type="text"],
-  input[type="date"],
-  select,
-  textarea {
-    width: 100%;
-    padding: 9px 12px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    font-size: 14px;
-    font-family: inherit;
-    color: #1a1a2e;
-    background: #fff;
-    transition: border-color 0.15s, box-shadow 0.15s;
-    outline: none;
-  }
+.section-title{
+  color:white;
+  font-size:13px;
+  text-transform:uppercase;
+  letter-spacing:1.5px;
+  margin-bottom:18px;
+  opacity:.8;
+}
 
-  input[type="text"]:focus,
-  input[type="date"]:focus,
-  select:focus,
-  textarea:focus {
-    border-color: #1a1a2e;
-    box-shadow: 0 0 0 3px rgba(26,26,46,0.1);
-  }
+.field{
+  margin-bottom:18px;
+}
 
-  textarea { resize: vertical; min-height: 80px; line-height: 1.5; }
+.field label{
+  display:block;
+  color:white;
+  margin-bottom:8px;
+  font-size:14px;
+  font-weight:500;
+}
 
-  .status-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 8px;
-  }
+.input,
+.select,
+.textarea{
+  width:100%;
+  padding:14px 15px;
+  border-radius:14px;
+  border:none;
+  outline:none;
+  background:rgba(255,255,255,.12);
+  color:white;
+  font-size:14px;
+  border:1px solid rgba(255,255,255,.08);
+}
 
-  .status-opt { position: relative; }
+.input::placeholder,
+.textarea::placeholder{
+  color:rgba(255,255,255,.55);
+}
 
-  .status-opt input[type="radio"] {
-    position: absolute; opacity: 0; width: 0; height: 0;
-  }
+.select option{
+  color:black;
+}
 
-  .status-opt label {
-    display: flex; align-items: center; justify-content: center;
-    padding: 9px 8px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 13px;
-    font-weight: 500;
-    color: #666;
-    transition: all 0.15s;
-    user-select: none;
-  }
+.textarea{
+  resize:none;
+  min-height:90px;
+}
 
-  .status-opt input[type="radio"]:checked + label.hadir { background: #eaf3de; border-color: #639922; color: #3B6D11; }
-  .status-opt input[type="radio"]:checked + label.izin  { background: #faeeda; border-color: #BA7517; color: #854F0B; }
-  .status-opt input[type="radio"]:checked + label.alpha { background: #fcebeb; border-color: #A32D2D; color: #791F1F; }
-  .status-opt label:hover { background: #f7f7f5; }
+.status-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+}
 
-  .upload-box {
-    border: 1px dashed #ccc;
-    border-radius: 8px;
-    padding: 1rem;
-    text-align: center;
-    cursor: pointer;
-    position: relative;
-    transition: all 0.15s;
-  }
+.radio-box{
+  position:relative;
+}
 
-  .upload-box:hover { border-color: #1a1a2e; background: #f9f9f7; }
+.radio-box input{
+  position:absolute;
+  opacity:0;
+}
 
-  .upload-box input[type="file"] {
-    position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%;
-  }
+.radio-box label{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:48px;
+  border-radius:14px;
+  background:rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.08);
+  color:white;
+  cursor:pointer;
+  transition:.2s;
+}
 
-  .upload-icon { font-size: 28px; margin-bottom: 6px; color: #aaa; }
-  .upload-label { font-size: 13px; color: #555; }
-  .upload-hint  { font-size: 11px; color: #aaa; margin-top: 3px; }
+.radio-box input:checked + label{
+  background:#ffffff;
+  color:#111827;
+  font-weight:600;
+}
 
-  .upload-preview {
-    margin-top: 8px;
-    font-size: 12px;
-    color: #3B6D11;
-    display: none;
-    align-items: center;
-    gap: 6px;
-    justify-content: center;
-  }
-  .upload-preview.visible { display: flex; }
+.upload{
+  border:2px dashed rgba(255,255,255,.25);
+  border-radius:18px;
+  padding:25px;
+  text-align:center;
+  position:relative;
+  overflow:hidden;
+}
 
-  hr { border: none; border-top: 1px solid #eee; }
+.upload input{
+  position:absolute;
+  inset:0;
+  opacity:0;
+  cursor:pointer;
+}
 
-  .btn-submit {
-    width: 100%;
-    padding: 12px;
-    background: #1a1a2e;
-    color: #fff;
-    border: none;
-    border-radius: 8px;
-    font-size: 15px;
-    font-weight: 600;
-    cursor: pointer;
-    font-family: inherit;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    transition: opacity 0.15s, transform 0.1s;
-    margin-top: 0.25rem;
-  }
+.upload-icon{
+  font-size:35px;
+  margin-bottom:10px;
+}
 
-  .btn-submit:hover  { opacity: 0.88; }
-  .btn-submit:active { transform: scale(0.99); }
-  .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; }
+.upload-text{
+  color:white;
+  font-size:14px;
+}
 
-  .alert-box {
-    border-radius: 8px;
-    padding: 12px 14px;
-    font-size: 13px;
-    align-items: center;
-    gap: 8px;
-    display: none;
-  }
+.upload-hint{
+  color:rgba(255,255,255,.6);
+  font-size:12px;
+  margin-top:4px;
+}
 
-  .alert-box.success { background: #eaf3de; color: #3B6D11; border: 1px solid #97c459; display: flex; }
-  .alert-box.error   { background: #fcebeb; color: #791F1F; border: 1px solid #f09595; display: flex; }
+.preview{
+  margin-top:10px;
+  color:#86efac;
+  font-size:13px;
+}
 
-  .spinner {
-    width: 16px; height: 16px;
-    border: 2px solid rgba(255,255,255,0.3);
-    border-top-color: #fff;
-    border-radius: 50%;
-    animation: spin 0.7s linear infinite;
-    display: none;
-  }
+.btn{
+  width:100%;
+  border:none;
+  border-radius:16px;
+  padding:15px;
+  background:white;
+  color:#111827;
+  font-size:15px;
+  font-weight:700;
+  cursor:pointer;
+  transition:.2s;
+  margin-top:10px;
+}
 
-  @keyframes spin { to { transform: rotate(360deg); } }
+.btn:hover{
+  transform:translateY(-2px);
+}
+
+.alert{
+  display:none;
+  margin-bottom:18px;
+  padding:14px;
+  border-radius:14px;
+  font-size:14px;
+}
+
+.success{
+  background:#dcfce7;
+  color:#166534;
+}
+
+.error{
+  background:#fee2e2;
+  color:#991b1b;
+}
+
+.loading{
+  opacity:.6;
+  pointer-events:none;
+}
+
+.footer{
+  text-align:center;
+  color:rgba(255,255,255,.55);
+  font-size:12px;
+  padding:0 0 25px;
+}
+
 </style>
 </head>
 <body>
 
-<div class="form-card">
-  <div class="form-header">
-    <div class="brand-row">
-      <div class="brand-icon">🎵</div>
-      <span class="brand-name">Doremi</span>
-    </div>
-    <div class="brand-sub">Home Music Course &mdash; Presensi Siswa</div>
-  </div>
+<div class="bg-blur"></div>
 
-  <div class="form-body">
-    <div id="alert-box" class="alert-box"></div>
+<div class="container">
 
-    <div class="section-title">Data Kehadiran</div>
+<div class="card">
 
-    <div class="field-group">
-      <label class="field-label" for="field-tanggal">📅 Tanggal <span class="req">*</span></label>
-      <input type="date" id="field-tanggal" />
-    </div>
+<div class="header">
+<div class="logo">🎵</div>
+<div class="title">Doremi</div>
+<div class="subtitle">
+Home Music Course — Presensi Siswa
+</div>
+</div>
 
-    <div class="field-group">
-      <label class="field-label" for="field-nama">👤 Nama Siswa <span class="req">*</span></label>
-      <input type="text" id="field-nama" placeholder="Masukkan nama lengkap siswa" />
-    </div>
+<div class="form">
 
-    <div class="field-group">
-      <div class="field-label">✅ Status Kehadiran <span class="req">*</span></div>
-      <div class="status-grid">
-        <div class="status-opt">
-          <input type="radio" name="status" id="s-hadir" value="Hadir" />
-          <label for="s-hadir" class="hadir">✓ Hadir</label>
-        </div>
-        <div class="status-opt">
-          <input type="radio" name="status" id="s-izin" value="Izin" />
-          <label for="s-izin" class="izin">📄 Izin</label>
-        </div>
-        <div class="status-opt">
-          <input type="radio" name="status" id="s-alpha" value="Alpha" />
-          <label for="s-alpha" class="alpha">✕ Alpha</label>
-        </div>
-      </div>
-    </div>
+<div id="alertBox" class="alert"></div>
 
-    <div class="field-group">
-      <label class="field-label" for="field-keterangan">📝 Keterangan</label>
-      <textarea id="field-keterangan" placeholder="Catatan tambahan (opsional)..."></textarea>
-    </div>
+<div class="section-title">
+Data Kehadiran
+</div>
 
-    <hr />
-    <div class="section-title">Dokumentasi (Opsional)</div>
+<form id="presensiForm">
 
-    <div class="field-group">
-      <div class="field-label">📷 Foto Kehadiran</div>
-      <div class="upload-box">
-        <input type="file" id="field-foto" accept="image/*" onchange="previewFile('foto')" />
-        <div class="upload-icon">🖼️</div>
-        <div class="upload-label">Klik untuk upload foto</div>
-        <div class="upload-hint">JPG, PNG, WEBP — maks 5 MB</div>
-        <div class="upload-preview" id="foto-preview">
-          ✅ <span id="foto-name"></span>
-        </div>
-      </div>
-    </div>
+<div class="field">
+<label>Tanggal</label>
+<input type="date" id="field-tanggal" class="input" required>
+</div>
 
-    <div class="field-group">
-      <div class="field-label">🎬 Video</div>
-      <div class="upload-box">
-        <input type="file" id="field-video" accept="video/*" onchange="previewFile('video')" />
-        <div class="upload-icon">🎥</div>
-        <div class="upload-label">Klik untuk upload video</div>
-        <div class="upload-hint">MP4, MOV — maks 50 MB</div>
-        <div class="upload-preview" id="video-preview">
-          ✅ <span id="video-name"></span>
-        </div>
-      </div>
-    </div>
+<div class="field">
+<label>Nama Siswa</label>
 
-    <button class="btn-submit" id="btn-kirim" onclick="submitForm()">
-      <div class="spinner" id="spinner"></div>
-      <span id="btn-text">📤 Kirim Presensi</span>
-    </button>
-  </div>
+<select id="field-nama" class="select" required>
+<option value="">Pilih Nama Siswa</option>
+</select>
+
+</div>
+
+<div class="field">
+
+<label>Status Kehadiran</label>
+
+<div class="status-grid">
+
+<div class="radio-box">
+<input type="radio" name="status" id="hadir" value="Hadir">
+<label for="hadir">✅ Hadir</label>
+</div>
+
+<div class="radio-box">
+<input type="radio" name="status" id="izin" value="Izin">
+<label for="izin">📄 Izin</label>
+</div>
+
+<div class="radio-box">
+<input type="radio" name="status" id="alpha" value="Alpha">
+<label for="alpha">❌ Alpha</label>
+</div>
+
+</div>
+</div>
+
+<div class="field">
+<label>Keterangan</label>
+
+<textarea
+id="field-keterangan"
+class="textarea"
+placeholder="Tambahkan catatan jika diperlukan..."
+></textarea>
+
+</div>
+
+<div class="section-title">
+Dokumentasi
+</div>
+
+<div class="field">
+
+<label>Foto</label>
+
+<div class="upload">
+
+<input
+type="file"
+id="field-foto"
+accept="image/*"
+onchange="previewFile('foto')"
+/>
+
+<div class="upload-icon">📸</div>
+
+<div class="upload-text">
+Klik untuk upload foto
+</div>
+
+<div class="upload-hint">
+JPG, PNG, WEBP
+</div>
+
+<div class="preview" id="foto-preview"></div>
+
+</div>
+</div>
+
+<div class="field">
+
+<label>Video</label>
+
+<div class="upload">
+
+<input
+type="file"
+id="field-video"
+accept="video/*"
+onchange="previewFile('video')"
+/>
+
+<div class="upload-icon">🎥</div>
+
+<div class="upload-text">
+Klik untuk upload video
+</div>
+
+<div class="upload-hint">
+MP4, MOV
+</div>
+
+<div class="preview" id="video-preview"></div>
+
+</div>
+</div>
+
+<button type="submit" class="btn" id="btnSubmit">
+📤 Kirim Presensi
+</button>
+
+</form>
+
+</div>
+
+<div class="footer">
+© Doremi Music Course
+</div>
+
+</div>
 </div>
 
 <script>
-  // ============================================================
-  // GANTI URL INI dengan URL deployment Google Apps Script kamu
-  // ============================================================
-  const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw06onTCh1DURUKuqxjCS9g2sB5_G2nHBR38h2rlBDUvm35cF-lZn44K7Ag73KppyGK/exec';
-  // ============================================================
 
-  document.getElementById('field-tanggal').valueAsDate = new Date();
+// ============================================
+// URL GOOGLE APPS SCRIPT
+// ============================================
 
-  function previewFile(type) {
-    const input = document.getElementById('field-' + type);
-    const preview = document.getElementById(type + '-preview');
-    const nameSpan = document.getElementById(type + '-name');
-    if (input.files && input.files[0]) {
-      const file = input.files[0];
-      const maxMB = type === 'video' ? 50 : 5;
-      if (file.size > maxMB * 1024 * 1024) {
-        alert('File terlalu besar! Maksimal ' + maxMB + ' MB.');
-        input.value = '';
-        return;
-      }
-      nameSpan.textContent = file.name;
-      preview.classList.add('visible');
-    }
-  }
+const APPS_SCRIPT_URL =
+'https://script.google.com/macros/s/AKfycbw06onTCh1DURUKuqxjCS9g2sB5_G2nHBR38h2rlBDUvm35cF-lZn44K7Ag73KppyGK/exec';
 
-  function showAlert(msg, type) {
-    const box = document.getElementById('alert-box');
-    box.className = 'alert-box ' + type;
-    box.textContent = msg;
-    box.style.display = 'flex';
-    box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-  }
+// ============================================
 
-  function toBase64(file) {
-    return new Promise((res, rej) => {
-      const r = new FileReader();
-      r.onload = () => res(r.result.split(',')[1]);
-      r.onerror = () => rej();
-      r.readAsDataURL(file);
+document.getElementById('field-tanggal').valueAsDate = new Date();
+
+loadSiswa();
+
+async function loadSiswa(){
+
+  try{
+
+    const res = await fetch(
+      APPS_SCRIPT_URL + '?action=getSiswa'
+    );
+
+    const json = await res.json();
+
+    const select = document.getElementById('field-nama');
+
+    json.siswa.forEach(nama => {
+
+      const option = document.createElement('option');
+
+      option.value = nama;
+      option.textContent = nama;
+
+      select.appendChild(option);
+
     });
+
+  }catch(err){
+
+    console.log(err);
+
   }
 
-  async function submitForm() {
-    const tanggal    = document.getElementById('field-tanggal').value;
-    const nama       = document.getElementById('field-nama').value.trim();
-    const statusEl   = document.querySelector('input[name="status"]:checked');
-    const keterangan = document.getElementById('field-keterangan').value.trim();
-    const fotoFile   = document.getElementById('field-foto').files[0];
-    const videoFile  = document.getElementById('field-video').files[0];
+}
 
-    document.getElementById('alert-box').style.display = 'none';
+function previewFile(type){
 
-    if (!tanggal) { showAlert('⚠️ Tanggal wajib diisi.', 'error'); return; }
-    if (!nama)    { showAlert('⚠️ Nama siswa wajib diisi.', 'error'); return; }
-    if (!statusEl){ showAlert('⚠️ Status kehadiran wajib dipilih.', 'error'); return; }
+  const input = document.getElementById('field-' + type);
 
-    const btn     = document.getElementById('btn-kirim');
-    const spinner = document.getElementById('spinner');
-    const btnText = document.getElementById('btn-text');
+  const preview = document.getElementById(type + '-preview');
 
-    btn.disabled    = true;
-    spinner.style.display = 'block';
-    btnText.textContent   = 'Mengirim...';
+  if(input.files[0]){
 
-    const payload = { tanggal, nama, status: statusEl.value, keterangan };
+    preview.innerHTML =
+    '✅ ' + input.files[0].name;
 
-    try {
-      if (fotoFile) {
-        payload.foto     = await toBase64(fotoFile);
-        payload.fotoName = fotoFile.name;
-        payload.fotoMime = fotoFile.type;
-      }
-      if (videoFile) {
-        payload.video     = await toBase64(videoFile);
-        payload.videoName = videoFile.name;
-        payload.videoMime = videoFile.type;
-      }
+  }
 
-      const res  = await fetch(APPS_SCRIPT_URL, { method: 'POST', body: JSON.stringify(payload) });
-      const json = await res.json();
+}
 
-      if (json.status === 'ok') {
-        showAlert('✅ Presensi berhasil dikirim! Data sudah masuk ke spreadsheet.', 'success');
-        document.getElementById('field-nama').value = '';
-        document.getElementById('field-keterangan').value = '';
-        document.querySelectorAll('input[name="status"]').forEach(r => r.checked = false);
-        ['foto','video'].forEach(t => {
-          document.getElementById('field-' + t).value = '';
-          document.getElementById(t + '-preview').classList.remove('visible');
-        });
-        document.getElementById('field-tanggal').valueAsDate = new Date();
-      } else {
-        showAlert('❌ Gagal: ' + (json.message || 'Terjadi kesalahan. Coba lagi.'), 'error');
-      }
-    } catch (e) {
-      showAlert('❌ Koneksi gagal. Pastikan URL Apps Script sudah benar dan di-deploy.', 'error');
+function showAlert(message,type){
+
+  const box = document.getElementById('alertBox');
+
+  box.style.display='block';
+
+  box.className='alert ' + type;
+
+  box.innerHTML=message;
+
+}
+
+function toBase64(file){
+
+  return new Promise((resolve,reject)=>{
+
+    const reader = new FileReader();
+
+    reader.readAsDataURL(file);
+
+    reader.onload=()=>resolve(
+      reader.result.split(',')[1]
+    );
+
+    reader.onerror=error=>reject(error);
+
+  });
+
+}
+
+document
+.getElementById('presensiForm')
+.addEventListener('submit',submitForm);
+
+async function submitForm(e){
+
+  e.preventDefault();
+
+  const btn =
+  document.getElementById('btnSubmit');
+
+  btn.classList.add('loading');
+
+  btn.innerHTML='Mengirim...';
+
+  try{
+
+    const tanggal =
+    document.getElementById('field-tanggal').value;
+
+    const nama =
+    document.getElementById('field-nama').value;
+
+    const status =
+    document.querySelector(
+      'input[name="status"]:checked'
+    )?.value;
+
+    const keterangan =
+    document.getElementById('field-keterangan').value;
+
+    const foto =
+    document.getElementById('field-foto').files[0];
+
+    const video =
+    document.getElementById('field-video').files[0];
+
+    if(!status){
+
+      showAlert(
+        '❌ Pilih status kehadiran',
+        'error'
+      );
+
+      btn.classList.remove('loading');
+
+      btn.innerHTML='📤 Kirim Presensi';
+
+      return;
+
     }
 
-    btn.disabled          = false;
-    spinner.style.display = 'none';
-    btnText.textContent   = '📤 Kirim Presensi';
+    const data = {
+      tanggal,
+      nama,
+      status,
+      keterangan
+    };
+
+    // FOTO
+
+    if(foto){
+
+      data.foto = await toBase64(foto);
+      data.fotoName = foto.name;
+      data.fotoMime = foto.type;
+
+    }
+
+    // VIDEO
+
+    if(video){
+
+      data.video = await toBase64(video);
+      data.videoName = video.name;
+      data.videoMime = video.type;
+
+    }
+
+    const response = await fetch(
+      APPS_SCRIPT_URL,
+      {
+        method:'POST',
+        headers:{
+          'Content-Type':'application/json'
+        },
+        body:JSON.stringify(data)
+      }
+    );
+
+    const result = await response.json();
+
+    console.log(result);
+
+    if(result.status === 'ok'){
+
+      showAlert(
+        '✅ Presensi berhasil dikirim',
+        'success'
+      );
+
+      document
+      .getElementById('presensiForm')
+      .reset();
+
+      document.getElementById(
+        'field-tanggal'
+      ).valueAsDate = new Date();
+
+      document.getElementById(
+        'foto-preview'
+      ).innerHTML='';
+
+      document.getElementById(
+        'video-preview'
+      ).innerHTML='';
+
+    }else{
+
+      showAlert(
+        '❌ ' + result.message,
+        'error'
+      );
+
+    }
+
+  }catch(err){
+
+    console.log(err);
+
+    showAlert(
+      '❌ Gagal mengirim data',
+      'error'
+    );
+
   }
+
+  btn.classList.remove('loading');
+
+  btn.innerHTML='📤 Kirim Presensi';
+
+}
+
 </script>
+
 </body>
 </html>
