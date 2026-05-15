@@ -77,10 +77,99 @@ input[type="date"],input[type="text"],select,textarea{
   transition:border-color var(--tr),box-shadow var(--tr);
   -webkit-appearance:none;appearance:none;
 }
-select option{background:#1a1a2e;color:#fff;}
 input:focus,select:focus,textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--input-focus);}
 input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(1);opacity:.6;cursor:pointer;}
 textarea{resize:none;min-height:clamp(72px,15vw,90px);line-height:1.6;}
+
+/* ===================== SEARCHABLE DROPDOWN ===================== */
+.searchable-wrap{position:relative;}
+
+.searchable-input-row{
+  display:flex;align-items:center;
+  width:100%;padding:clamp(11px,2.5vw,13px) clamp(12px,3vw,15px);
+  border-radius:var(--radius-sm);border:1px solid var(--input-border);
+  background:var(--input-bg);
+  transition:border-color var(--tr),box-shadow var(--tr);
+  cursor:text;
+}
+.searchable-input-row.open,
+.searchable-input-row:focus-within{
+  border-color:var(--accent);
+  box-shadow:0 0 0 3px var(--input-focus);
+}
+.searchable-input-row input{
+  flex:1;border:none;background:transparent;
+  color:var(--text);font-size:clamp(13px,3vw,14px);font-family:inherit;
+  outline:none;padding:0;min-width:0;
+  -webkit-appearance:none;appearance:none;
+}
+.searchable-input-row input::placeholder{color:var(--muted);}
+
+.sd-chevron{
+  flex-shrink:0;margin-left:8px;color:var(--muted);
+  font-size:12px;transition:transform var(--tr);pointer-events:none;
+  user-select:none;
+}
+.searchable-input-row.open .sd-chevron{transform:rotate(180deg);}
+
+.sd-clear{
+  flex-shrink:0;margin-left:6px;color:var(--muted);
+  font-size:14px;cursor:pointer;line-height:1;
+  display:none;padding:0 2px;
+  transition:color var(--tr);
+}
+.sd-clear:hover{color:var(--red);}
+.sd-clear.show{display:block;}
+
+.sd-dropdown{
+  position:absolute;top:calc(100% + 6px);left:0;right:0;
+  background:#1c1b28;
+  border:1px solid var(--input-border);
+  border-radius:var(--radius-sm);
+  box-shadow:0 12px 40px rgba(0,0,0,.55);
+  z-index:999;overflow:hidden;
+  display:none;
+  animation:sdIn .15s ease;
+}
+.sd-dropdown.open{display:block;}
+@keyframes sdIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+
+.sd-list{
+  max-height:220px;overflow-y:auto;
+  scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.15) transparent;
+}
+.sd-list::-webkit-scrollbar{width:4px;}
+.sd-list::-webkit-scrollbar-track{background:transparent;}
+.sd-list::-webkit-scrollbar-thumb{background:rgba(255,255,255,.15);border-radius:4px;}
+
+.sd-item{
+  padding:10px 14px;font-size:clamp(13px,3vw,14px);
+  cursor:pointer;color:var(--text);
+  transition:background var(--tr),color var(--tr);
+  display:flex;align-items:center;gap:8px;
+}
+.sd-item:hover,.sd-item.focused{background:rgba(245,166,35,.12);color:var(--accent);}
+.sd-item.selected{color:var(--accent);font-weight:600;}
+.sd-item .sd-initial{
+  width:26px;height:26px;border-radius:50%;
+  background:rgba(245,166,35,.15);color:var(--accent);
+  font-size:11px;font-weight:700;letter-spacing:.5px;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.sd-item.selected .sd-initial{background:rgba(245,166,35,.25);}
+
+.sd-empty{
+  padding:16px 14px;text-align:center;
+  color:var(--muted);font-size:13px;
+}
+
+.sd-letter-group{
+  padding:6px 14px 2px;font-size:10px;font-weight:700;
+  letter-spacing:1.5px;text-transform:uppercase;color:rgba(245,166,35,.45);
+  border-top:1px solid rgba(255,255,255,.05);
+}
+.sd-letter-group:first-child{border-top:none;}
+/* ============================================================== */
 
 /* STATUS */
 .status-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(6px,2vw,10px);}
@@ -188,9 +277,19 @@ textarea{resize:none;min-height:clamp(72px,15vw,90px);line-height:1.6;}
 
         <div class="field">
           <label>Nama Siswa <span class="req">*</span></label>
-          <select id="f-nama" required>
-            <option value="">Pilih Nama Siswa</option>
-          </select>
+          <!-- Searchable dropdown untuk form tambah -->
+          <div class="searchable-wrap" id="sd-form">
+            <div class="searchable-input-row" id="sd-form-row">
+              <input type="text" id="sd-form-input" placeholder="Cari atau pilih nama siswa..." autocomplete="off" />
+              <span class="sd-clear" id="sd-form-clear" title="Hapus pilihan">✕</span>
+              <span class="sd-chevron">▼</span>
+            </div>
+            <div class="sd-dropdown" id="sd-form-dropdown">
+              <div class="sd-list" id="sd-form-list"></div>
+            </div>
+            <!-- Hidden field untuk menyimpan value terpilih -->
+            <input type="hidden" id="f-nama" />
+          </div>
         </div>
 
         <div class="field">
@@ -282,9 +381,18 @@ textarea{resize:none;min-height:clamp(72px,15vw,90px);line-height:1.6;}
 
         <div class="field">
           <label>Nama Siswa <span class="req">*</span></label>
-          <select id="e-nama" required>
-            <option value="">Pilih Nama Siswa</option>
-          </select>
+          <!-- Searchable dropdown untuk form edit -->
+          <div class="searchable-wrap" id="sd-edit">
+            <div class="searchable-input-row" id="sd-edit-row">
+              <input type="text" id="sd-edit-input" placeholder="Cari atau pilih nama siswa..." autocomplete="off" />
+              <span class="sd-clear" id="sd-edit-clear" title="Hapus pilihan">✕</span>
+              <span class="sd-chevron">▼</span>
+            </div>
+            <div class="sd-dropdown" id="sd-edit-dropdown">
+              <div class="sd-list" id="sd-edit-list"></div>
+            </div>
+            <input type="hidden" id="e-nama" />
+          </div>
         </div>
 
         <div class="field">
@@ -359,6 +467,206 @@ const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzn7rO-ilAQUQWGcoAx1
 
 let lastSubmitted = null;
 let lastRowIndex  = null;
+let allSiswa      = [];   // master list, sudah diurutkan abjad
+
+// ===================== SEARCHABLE DROPDOWN ENGINE =====================
+class SearchableDropdown {
+  constructor(cfg) {
+    // cfg: { wrapId, rowId, inputId, clearId, dropdownId, listId, hiddenId }
+    this.wrap     = document.getElementById(cfg.wrapId);
+    this.row      = document.getElementById(cfg.rowId);
+    this.input    = document.getElementById(cfg.inputId);
+    this.clearBtn = document.getElementById(cfg.clearId);
+    this.dropdown = document.getElementById(cfg.dropdownId);
+    this.list     = document.getElementById(cfg.listId);
+    this.hidden   = document.getElementById(cfg.hiddenId);
+    this.items    = [];      // array of strings
+    this.selected = '';
+    this.focusIdx = -1;
+    this._bind();
+  }
+
+  setItems(arr) {
+    // Urutkan abjad (case-insensitive), tidak berubah setelah init
+    this.items = [...arr].sort((a,b) => a.localeCompare(b, 'id', {sensitivity:'base'}));
+    this._renderList('');
+  }
+
+  setValue(val) {
+    this.selected = val;
+    this.input.value = val;
+    this.hidden.value = val;
+    this._toggleClear();
+    this._renderList(this.input.value);
+  }
+
+  reset() {
+    this.selected = '';
+    this.input.value = '';
+    this.hidden.value = '';
+    this.focusIdx = -1;
+    this._toggleClear();
+    this._close();
+    this._renderList('');
+  }
+
+  getValue() { return this.hidden.value; }
+
+  _bind() {
+    // Buka dropdown saat klik area atau fokus input
+    this.row.addEventListener('click', () => {
+      this._open();
+      this.input.focus();
+    });
+
+    this.input.addEventListener('input', () => {
+      this.selected = '';
+      this.hidden.value = '';
+      this.focusIdx = -1;
+      this._toggleClear();
+      this._renderList(this.input.value);
+      this._open();
+    });
+
+    this.input.addEventListener('keydown', e => this._onKey(e));
+
+    this.clearBtn.addEventListener('click', e => {
+      e.stopPropagation();
+      this.reset();
+      this.input.focus();
+      this._open();
+    });
+
+    // Tutup dropdown kalau klik di luar
+    document.addEventListener('click', e => {
+      if (!this.wrap.contains(e.target)) this._close();
+    });
+  }
+
+  _open() {
+    this.row.classList.add('open');
+    this.dropdown.classList.add('open');
+    this._renderList(this.input.value);
+  }
+
+  _close() {
+    this.row.classList.remove('open');
+    this.dropdown.classList.remove('open');
+    this.focusIdx = -1;
+    // Kalau ada selected, pastikan input menampilkannya kembali
+    if (this.selected) this.input.value = this.selected;
+    else if (!this.hidden.value) this.input.value = '';
+  }
+
+  _toggleClear() {
+    if (this.input.value || this.selected) {
+      this.clearBtn.classList.add('show');
+    } else {
+      this.clearBtn.classList.remove('show');
+    }
+  }
+
+  _renderList(query) {
+    const q = query.trim().toLowerCase();
+    const filtered = q
+      ? this.items.filter(n => n.toLowerCase().includes(q))
+      : this.items;
+
+    if (!filtered.length) {
+      this.list.innerHTML = `<div class="sd-empty">Tidak ditemukan</div>`;
+      return;
+    }
+
+    // Kelompokkan per huruf pertama
+    let html = '';
+    let lastLetter = '';
+    filtered.forEach((name, i) => {
+      const letter = name[0].toUpperCase();
+      if (letter !== lastLetter) {
+        html += `<div class="sd-letter-group">${letter}</div>`;
+        lastLetter = letter;
+      }
+      const initial  = name.substring(0,2).toUpperCase();
+      const isSel    = name === this.selected;
+      const display  = q ? this._highlight(name, q) : name;
+      html += `<div class="sd-item${isSel?' selected':''}" data-val="${name}" data-i="${i}">
+        <span class="sd-initial">${initial}</span>${display}
+      </div>`;
+    });
+    this.list.innerHTML = html;
+
+    // Event listener pada item
+    this.list.querySelectorAll('.sd-item').forEach(el => {
+      el.addEventListener('mousedown', e => {
+        e.preventDefault();
+        this._select(el.dataset.val);
+      });
+    });
+
+    // Scroll ke selected
+    const sel = this.list.querySelector('.sd-item.selected');
+    if (sel) sel.scrollIntoView({block:'nearest'});
+  }
+
+  _highlight(name, q) {
+    const idx = name.toLowerCase().indexOf(q);
+    if (idx === -1) return name;
+    return name.substring(0,idx) +
+      `<mark style="background:rgba(245,166,35,.3);color:var(--accent);border-radius:2px;">${name.substring(idx,idx+q.length)}</mark>` +
+      name.substring(idx+q.length);
+  }
+
+  _select(val) {
+    this.selected  = val;
+    this.hidden.value = val;
+    this.input.value  = val;
+    this._toggleClear();
+    this._close();
+  }
+
+  _onKey(e) {
+    const items = [...this.list.querySelectorAll('.sd-item')];
+    if (!items.length) return;
+
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      this.focusIdx = Math.min(this.focusIdx + 1, items.length - 1);
+      this._applyFocus(items);
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      this.focusIdx = Math.max(this.focusIdx - 1, 0);
+      this._applyFocus(items);
+    } else if (e.key === 'Enter') {
+      e.preventDefault();
+      if (this.focusIdx >= 0 && items[this.focusIdx]) {
+        this._select(items[this.focusIdx].dataset.val);
+      }
+    } else if (e.key === 'Escape') {
+      this._close();
+    }
+  }
+
+  _applyFocus(items) {
+    items.forEach((el,i) => {
+      el.classList.toggle('focused', i === this.focusIdx);
+      if (i === this.focusIdx) el.scrollIntoView({block:'nearest'});
+    });
+  }
+}
+
+// Instansiasi dua dropdown
+const sdForm = new SearchableDropdown({
+  wrapId:'sd-form', rowId:'sd-form-row', inputId:'sd-form-input',
+  clearId:'sd-form-clear', dropdownId:'sd-form-dropdown',
+  listId:'sd-form-list', hiddenId:'f-nama'
+});
+const sdEdit = new SearchableDropdown({
+  wrapId:'sd-edit', rowId:'sd-edit-row', inputId:'sd-edit-input',
+  clearId:'sd-edit-clear', dropdownId:'sd-edit-dropdown',
+  listId:'sd-edit-list', hiddenId:'e-nama'
+});
+
+// ======================================================================
 
 // INIT
 document.getElementById('f-tanggal').valueAsDate = new Date();
@@ -369,16 +677,15 @@ async function loadSiswa() {
   try {
     const res  = await fetch(SCRIPT_URL + '?action=getSiswa');
     const json = await res.json();
-    const list = json.siswa || [];
-    ['f-nama','e-nama'].forEach(id => {
-      const sel = document.getElementById(id);
-      list.forEach(n => {
-        const o = document.createElement('option');
-        o.value = o.textContent = n;
-        sel.appendChild(o);
-      });
-    });
-  } catch(e) { console.warn('Gagal load siswa:', e); }
+    // Urutkan abjad di sini (SearchableDropdown juga mengurutkan, double safety)
+    allSiswa = (json.siswa || []).sort((a,b) =>
+      a.localeCompare(b, 'id', {sensitivity:'base'})
+    );
+    sdForm.setItems(allSiswa);
+    sdEdit.setItems(allSiswa);
+  } catch(e) {
+    console.warn('Gagal load siswa:', e);
+  }
 }
 
 // VIEWS
@@ -389,7 +696,7 @@ function showView(id) {
 }
 
 function goNew() {
-  document.getElementById('f-nama').value = '';
+  sdForm.reset();
   document.querySelectorAll('input[name="status"]').forEach(r => r.checked = false);
   document.getElementById('f-keterangan').value = '';
   ['f-foto','f-video'].forEach(id => {
@@ -409,10 +716,7 @@ function goEdit() {
   document.getElementById('e-tanggal').value    = d.tanggal;
   document.getElementById('e-keterangan').value = d.keterangan || '';
 
-  const eSel = document.getElementById('e-nama');
-  for (let i = 0; i < eSel.options.length; i++) {
-    if (eSel.options[i].value === d.nama) { eSel.selectedIndex = i; break; }
-  }
+  sdEdit.setValue(d.nama);
 
   const r = document.querySelector(`input[name="status-edit"][value="${d.status}"]`);
   if (r) r.checked = true;
@@ -480,7 +784,7 @@ function buildSummary(d) {
 // SUBMIT
 async function submitForm() {
   const tanggal    = document.getElementById('f-tanggal').value;
-  const nama       = document.getElementById('f-nama').value;
+  const nama       = sdForm.getValue();
   const statusEl   = document.querySelector('input[name="status"]:checked');
   const keterangan = document.getElementById('f-keterangan').value.trim();
   const fotoFile   = document.getElementById('f-foto').files[0];
@@ -529,7 +833,7 @@ async function updateForm() {
   }
 
   const tanggal    = document.getElementById('e-tanggal').value;
-  const nama       = document.getElementById('e-nama').value;
+  const nama       = sdEdit.getValue();
   const statusEl   = document.querySelector('input[name="status-edit"]:checked');
   const keterangan = document.getElementById('e-keterangan').value.trim();
   const fotoFile   = document.getElementById('e-foto').files[0];
