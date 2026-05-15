@@ -460,431 +460,527 @@ textarea{resize:none;min-height:clamp(72px,15vw,90px);line-height:1.6;}
 
 <script>
 // ============================================================
-// GANTI dengan URL deployment Google Apps Script kamu
+// GANTI URL APPS SCRIPT
 // ============================================================
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzn7rO-ilAQUQWGcoAx1wEUeHC2-0RLMl_gYN9rUD0OJb7YqH3ui_YB4R61XZ761csW/exec';
+
 // ============================================================
 
 let lastSubmitted = null;
-let lastRowIndex  = null;
-let allSiswa      = [];   // master list, sudah diurutkan abjad
+let lastRowIndex = null;
+let allSiswa = [];
 
-// ===================== SEARCHABLE DROPDOWN ENGINE =====================
-class SearchableDropdown {
-  constructor(cfg) {
-    // cfg: { wrapId, rowId, inputId, clearId, dropdownId, listId, hiddenId }
-    this.wrap     = document.getElementById(cfg.wrapId);
-    this.row      = document.getElementById(cfg.rowId);
-    this.input    = document.getElementById(cfg.inputId);
-    this.clearBtn = document.getElementById(cfg.clearId);
-    this.dropdown = document.getElementById(cfg.dropdownId);
-    this.list     = document.getElementById(cfg.listId);
-    this.hidden   = document.getElementById(cfg.hiddenId);
-    this.items    = [];      // array of strings
-    this.selected = '';
-    this.focusIdx = -1;
-    this._bind();
-  }
-
-  setItems(arr) {
-    // Urutkan abjad (case-insensitive), tidak berubah setelah init
-    this.items = [...arr].sort((a,b) => a.localeCompare(b, 'id', {sensitivity:'base'}));
-    this._renderList('');
-  }
-
-  setValue(val) {
-    this.selected = val;
-    this.input.value = val;
-    this.hidden.value = val;
-    this._toggleClear();
-    this._renderList(this.input.value);
-  }
-
-  reset() {
-    this.selected = '';
-    this.input.value = '';
-    this.hidden.value = '';
-    this.focusIdx = -1;
-    this._toggleClear();
-    this._close();
-    this._renderList('');
-  }
-
-  getValue() { return this.hidden.value; }
-
-  _bind() {
-    // Buka dropdown saat klik area atau fokus input
-    this.row.addEventListener('click', () => {
-      this._open();
-      this.input.focus();
-    });
-
-    this.input.addEventListener('input', () => {
-      this.selected = '';
-      this.hidden.value = '';
-      this.focusIdx = -1;
-      this._toggleClear();
-      this._renderList(this.input.value);
-      this._open();
-    });
-
-    this.input.addEventListener('keydown', e => this._onKey(e));
-
-    this.clearBtn.addEventListener('click', e => {
-      e.stopPropagation();
-      this.reset();
-      this.input.focus();
-      this._open();
-    });
-
-    // Tutup dropdown kalau klik di luar
-    document.addEventListener('click', e => {
-      if (!this.wrap.contains(e.target)) this._close();
-    });
-  }
-
-  _open() {
-    this.row.classList.add('open');
-    this.dropdown.classList.add('open');
-    this._renderList(this.input.value);
-  }
-
-  _close() {
-    this.row.classList.remove('open');
-    this.dropdown.classList.remove('open');
-    this.focusIdx = -1;
-    // Kalau ada selected, pastikan input menampilkannya kembali
-    if (this.selected) this.input.value = this.selected;
-    else if (!this.hidden.value) this.input.value = '';
-  }
-
-  _toggleClear() {
-    if (this.input.value || this.selected) {
-      this.clearBtn.classList.add('show');
-    } else {
-      this.clearBtn.classList.remove('show');
-    }
-  }
-
-  _renderList(query) {
-    const q = query.trim().toLowerCase();
-    const filtered = q
-      ? this.items.filter(n => n.toLowerCase().includes(q))
-      : this.items;
-
-    if (!filtered.length) {
-      this.list.innerHTML = `<div class="sd-empty">Tidak ditemukan</div>`;
-      return;
-    }
-
-    // Kelompokkan per huruf pertama
-    let html = '';
-    let lastLetter = '';
-    filtered.forEach((name, i) => {
-      const letter = name[0].toUpperCase();
-      if (letter !== lastLetter) {
-        html += `<div class="sd-letter-group">${letter}</div>`;
-        lastLetter = letter;
-      }
-      const initial  = name.substring(0,2).toUpperCase();
-      const isSel    = name === this.selected;
-      const display  = q ? this._highlight(name, q) : name;
-      html += `<div class="sd-item${isSel?' selected':''}" data-val="${name}" data-i="${i}">
-        <span class="sd-initial">${initial}</span>${display}
-      </div>`;
-    });
-    this.list.innerHTML = html;
-
-    // Event listener pada item
-    this.list.querySelectorAll('.sd-item').forEach(el => {
-      el.addEventListener('mousedown', e => {
-        e.preventDefault();
-        this._select(el.dataset.val);
-      });
-    });
-
-    // Scroll ke selected
-    const sel = this.list.querySelector('.sd-item.selected');
-    if (sel) sel.scrollIntoView({block:'nearest'});
-  }
-
-  _highlight(name, q) {
-    const idx = name.toLowerCase().indexOf(q);
-    if (idx === -1) return name;
-    return name.substring(0,idx) +
-      `<mark style="background:rgba(245,166,35,.3);color:var(--accent);border-radius:2px;">${name.substring(idx,idx+q.length)}</mark>` +
-      name.substring(idx+q.length);
-  }
-
-  _select(val) {
-    this.selected  = val;
-    this.hidden.value = val;
-    this.input.value  = val;
-    this._toggleClear();
-    this._close();
-  }
-
-  _onKey(e) {
-    const items = [...this.list.querySelectorAll('.sd-item')];
-    if (!items.length) return;
-
-    if (e.key === 'ArrowDown') {
-      e.preventDefault();
-      this.focusIdx = Math.min(this.focusIdx + 1, items.length - 1);
-      this._applyFocus(items);
-    } else if (e.key === 'ArrowUp') {
-      e.preventDefault();
-      this.focusIdx = Math.max(this.focusIdx - 1, 0);
-      this._applyFocus(items);
-    } else if (e.key === 'Enter') {
-      e.preventDefault();
-      if (this.focusIdx >= 0 && items[this.focusIdx]) {
-        this._select(items[this.focusIdx].dataset.val);
-      }
-    } else if (e.key === 'Escape') {
-      this._close();
-    }
-  }
-
-  _applyFocus(items) {
-    items.forEach((el,i) => {
-      el.classList.toggle('focused', i === this.focusIdx);
-      if (i === this.focusIdx) el.scrollIntoView({block:'nearest'});
-    });
-  }
-}
-
-// Instansiasi dua dropdown
-const sdForm = new SearchableDropdown({
-  wrapId:'sd-form', rowId:'sd-form-row', inputId:'sd-form-input',
-  clearId:'sd-form-clear', dropdownId:'sd-form-dropdown',
-  listId:'sd-form-list', hiddenId:'f-nama'
-});
-const sdEdit = new SearchableDropdown({
-  wrapId:'sd-edit', rowId:'sd-edit-row', inputId:'sd-edit-input',
-  clearId:'sd-edit-clear', dropdownId:'sd-edit-dropdown',
-  listId:'sd-edit-list', hiddenId:'e-nama'
-});
-
-// ======================================================================
-
-// INIT
+// ================= INIT =================
 document.getElementById('f-tanggal').valueAsDate = new Date();
 document.getElementById('e-tanggal').valueAsDate = new Date();
+
 loadSiswa();
 
+// ================= LOAD SISWA =================
 async function loadSiswa() {
   try {
-    const res  = await fetch(SCRIPT_URL + '?action=getSiswa');
+
+    const res = await fetch(SCRIPT_URL + '?action=getSiswa');
     const json = await res.json();
-    // Urutkan abjad di sini (SearchableDropdown juga mengurutkan, double safety)
-    allSiswa = (json.siswa || []).sort((a,b) =>
-      a.localeCompare(b, 'id', {sensitivity:'base'})
+
+    allSiswa = (json.siswa || []).sort((a, b) =>
+      a.localeCompare(b, 'id', { sensitivity: 'base' })
     );
+
     sdForm.setItems(allSiswa);
     sdEdit.setItems(allSiswa);
-  } catch(e) {
-    console.warn('Gagal load siswa:', e);
+
+  } catch (err) {
+    console.error(err);
   }
 }
 
-// VIEWS
-function showView(id) {
-  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-  document.getElementById('view-' + id).classList.add('active');
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-}
-
-function goNew() {
-  sdForm.reset();
-  document.querySelectorAll('input[name="status"]').forEach(r => r.checked = false);
-  document.getElementById('f-keterangan').value = '';
-  ['f-foto','f-video'].forEach(id => {
-    document.getElementById(id).value = '';
-    document.getElementById('prev-' + id).classList.remove('show');
-  });
-  document.getElementById('f-tanggal').valueAsDate = new Date();
-  document.getElementById('alertBox').style.display = 'none';
-  showView('form');
-}
-
-function goSuccess() { showView('success'); }
-
-function goEdit() {
-  if (!lastSubmitted) return;
-  const d = lastSubmitted;
-  document.getElementById('e-tanggal').value    = d.tanggal;
-  document.getElementById('e-keterangan').value = d.keterangan || '';
-
-  sdEdit.setValue(d.nama);
-
-  const r = document.querySelector(`input[name="status-edit"][value="${d.status}"]`);
-  if (r) r.checked = true;
-
-  ['e-foto','e-video'].forEach(id => {
-    document.getElementById(id).value = '';
-    document.getElementById('prev-' + id).classList.remove('show');
-  });
-
-  document.getElementById('editAlertBox').style.display = 'none';
-  showView('edit');
-}
-
-// FILE
+// ================= FILE PREVIEW =================
 function onFileChange(inputId) {
+
   const input = document.getElementById(inputId);
-  if (!input.files[0]) return;
-  const isVideo = input.accept.includes('video');
-  const maxMB   = isVideo ? 50 : 5;
-  if (input.files[0].size > maxMB * 1024 * 1024) {
-    alert('File terlalu besar! Maks ' + maxMB + ' MB');
+
+  if (!input.files.length) return;
+
+  const file = input.files[0];
+
+  const isVideo = file.type.startsWith('video/');
+  const maxMB = isVideo ? 50 : 5;
+
+  if (file.size > maxMB * 1024 * 1024) {
+
+    alert(`Ukuran file maksimal ${maxMB} MB`);
+
     input.value = '';
+
     return;
   }
+
   const prev = document.getElementById('prev-' + inputId);
-  document.getElementById('prev-' + inputId + '-name').textContent = input.files[0].name;
+
+  document.getElementById(
+    'prev-' + inputId + '-name'
+  ).textContent = file.name;
+
   prev.classList.add('show');
 }
 
+// ================= BASE64 =================
 function toBase64(file) {
-  return new Promise((res, rej) => {
-    const r = new FileReader();
-    r.onload  = () => res(r.result.split(',')[1]);
-    r.onerror = () => rej();
-    r.readAsDataURL(file);
+
+  return new Promise((resolve, reject) => {
+
+    const reader = new FileReader();
+
+    reader.readAsDataURL(file);
+
+    reader.onload = () => {
+      resolve(reader.result.split(',')[1]);
+    };
+
+    reader.onerror = error => reject(error);
+
   });
+
 }
 
-function showAlert(boxId, msg, type) {
-  const b = document.getElementById(boxId);
-  b.className = 'alert ' + type;
-  b.textContent = msg;
-  b.style.display = 'flex';
+// ================= ALERT =================
+function showAlert(boxId, message, type) {
+
+  const box = document.getElementById(boxId);
+
+  box.className = 'alert ' + type;
+
+  box.innerHTML = message;
+
+  box.style.display = 'flex';
+
 }
 
-function statusBadge(s) {
-  const cls = { Hadir:'badge-hadir', Izin:'badge-izin', Alpha:'badge-alpha' };
-  return `<span class="badge ${cls[s]||''}">${s}</span>`;
+// ================= LOADING =================
+function setLoading(on, mode) {
+
+  if (mode === 'submit') {
+
+    document.getElementById('btnSubmit').disabled = on;
+
+    document.getElementById('spinner').style.display =
+      on ? 'block' : 'none';
+
+    document.getElementById('btn-text').textContent =
+      on ? 'Mengirim...' : '📤 Kirim Presensi';
+
+  } else {
+
+    document.getElementById('btnUpdate').disabled = on;
+
+    document.getElementById('spinner-edit').style.display =
+      on ? 'block' : 'none';
+
+    document.getElementById('btn-edit-text').textContent =
+      on ? 'Menyimpan...' : '💾 Simpan Perubahan';
+  }
 }
 
-function buildSummary(d) {
-  const rows = [
-    ['Tanggal',    d.tanggal],
-    ['Nama',       d.nama],
-    ['Status',     statusBadge(d.status)],
-    ['Keterangan', d.keterangan || '—'],
-    ['Foto',       d.fotoUrl  ? `<a href="${d.fotoUrl}"  target="_blank" style="color:var(--accent)">Lihat foto ↗</a>`  : '—'],
-    ['Video',      d.videoUrl ? `<a href="${d.videoUrl}" target="_blank" style="color:var(--accent)">Lihat video ↗</a>` : '—'],
-  ];
-  return rows.map(([k,v]) =>
-    `<div class="data-row"><span class="data-key">${k}</span><span class="data-val">${v}</span></div>`
-  ).join('');
+// ================= BADGE =================
+function statusBadge(status) {
+
+  const cls = {
+    Hadir: 'badge-hadir',
+    Izin: 'badge-izin',
+    Alpha: 'badge-alpha'
+  };
+
+  return `
+    <span class="badge ${cls[status] || ''}">
+      ${status}
+    </span>
+  `;
 }
 
-// SUBMIT
+// ================= SUMMARY =================
+function buildSummary(data) {
+
+  return `
+  
+  <div class="data-row">
+    <span class="data-key">Tanggal</span>
+    <span class="data-val">${data.tanggal}</span>
+  </div>
+
+  <div class="data-row">
+    <span class="data-key">Nama</span>
+    <span class="data-val">${data.nama}</span>
+  </div>
+
+  <div class="data-row">
+    <span class="data-key">Status</span>
+    <span class="data-val">
+      ${statusBadge(data.status)}
+    </span>
+  </div>
+
+  <div class="data-row">
+    <span class="data-key">Keterangan</span>
+    <span class="data-val">
+      ${data.keterangan || '-'}
+    </span>
+  </div>
+
+  <div class="data-row">
+    <span class="data-key">Foto</span>
+    <span class="data-val">
+      ${
+        data.fotoUrl
+          ? `<a href="${data.fotoUrl}" target="_blank" style="color:var(--accent)">Lihat Foto</a>`
+          : '-'
+      }
+    </span>
+  </div>
+
+  <div class="data-row">
+    <span class="data-key">Video</span>
+    <span class="data-val">
+      ${
+        data.videoUrl
+          ? `<a href="${data.videoUrl}" target="_blank" style="color:var(--accent)">Lihat Video</a>`
+          : '-'
+      }
+    </span>
+  </div>
+
+  `;
+}
+
+// ================= SUBMIT =================
 async function submitForm() {
-  const tanggal    = document.getElementById('f-tanggal').value;
-  const nama       = sdForm.getValue();
-  const statusEl   = document.querySelector('input[name="status"]:checked');
-  const keterangan = document.getElementById('f-keterangan').value.trim();
-  const fotoFile   = document.getElementById('f-foto').files[0];
-  const videoFile  = document.getElementById('f-video').files[0];
+
+  const tanggal = document.getElementById('f-tanggal').value;
+
+  const nama = sdForm.getValue();
+
+  const statusEl = document.querySelector(
+    'input[name="status"]:checked'
+  );
+
+  const keterangan =
+    document.getElementById('f-keterangan').value.trim();
+
+  const fotoFile =
+    document.getElementById('f-foto').files[0];
+
+  const videoFile =
+    document.getElementById('f-video').files[0];
 
   document.getElementById('alertBox').style.display = 'none';
 
-  if (!tanggal)  { showAlert('alertBox','⚠️ Tanggal wajib diisi.','error'); return; }
-  if (!nama)     { showAlert('alertBox','⚠️ Nama siswa wajib dipilih.','error'); return; }
-  if (!statusEl) { showAlert('alertBox','⚠️ Status kehadiran wajib dipilih.','error'); return; }
+  // VALIDASI
+  if (!tanggal) {
+    showAlert('alertBox', '⚠️ Tanggal wajib diisi', 'error');
+    return;
+  }
+
+  if (!nama) {
+    showAlert('alertBox', '⚠️ Nama siswa wajib dipilih', 'error');
+    return;
+  }
+
+  if (!statusEl) {
+    showAlert('alertBox', '⚠️ Status wajib dipilih', 'error');
+    return;
+  }
 
   setLoading(true, 'submit');
 
-  const payload = { tanggal, nama, status: statusEl.value, keterangan };
-
   try {
-    if (fotoFile)  { payload.foto = await toBase64(fotoFile); payload.fotoName = fotoFile.name; payload.fotoMime = fotoFile.type; }
-    if (videoFile) { payload.video = await toBase64(videoFile); payload.videoName = videoFile.name; payload.videoMime = videoFile.type; }
 
-    const res  = await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(payload) });
-    const json = await res.json();
+    const payload = {
+      tanggal,
+      nama,
+      status: statusEl.value,
+      keterangan
+    };
 
-    if (json.status === 'ok') {
-      lastSubmitted = { ...payload, fotoUrl: json.fotoUrl || '', videoUrl: json.videoUrl || '' };
-      lastRowIndex  = json.rowIndex || null;
+    // FOTO
+    if (fotoFile) {
 
-      document.getElementById('success-sub').textContent =
-        'ID: ' + (json.id || '—') + ' · Tersimpan di spreadsheet';
-      document.getElementById('summary-box').innerHTML = buildSummary(lastSubmitted);
-      showView('success');
-    } else {
-      showAlert('alertBox','❌ ' + (json.message || 'Gagal menyimpan'),'error');
+      payload.foto = await toBase64(fotoFile);
+      payload.fotoName = fotoFile.name;
+      payload.fotoMime = fotoFile.type;
+
     }
-  } catch(err) {
-    showAlert('alertBox','❌ Gagal menghubungi server. Cek URL Apps Script.','error');
+
+    // VIDEO
+    if (videoFile) {
+
+      payload.video = await toBase64(videoFile);
+      payload.videoName = videoFile.name;
+      payload.videoMime = videoFile.type;
+
+    }
+
+    const response = await fetch(SCRIPT_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'text/plain;charset=utf-8'
+      },
+      body: JSON.stringify(payload),
+      redirect: 'follow'
+    });
+
+    const text = await response.text();
+
+    let result;
+
+    try {
+
+      result = JSON.parse(text);
+
+    } catch (e) {
+
+      console.error(text);
+
+      throw new Error('Response bukan JSON');
+
+    }
+
+    if (result.status === 'ok') {
+
+      lastRowIndex = result.rowIndex || null;
+
+      lastSubmitted = {
+        ...payload,
+        fotoUrl: result.fotoUrl || '',
+        videoUrl: result.videoUrl || ''
+      };
+
+      document.getElementById(
+        'summary-box'
+      ).innerHTML = buildSummary(lastSubmitted);
+
+      document.getElementById(
+        'success-sub'
+      ).textContent =
+        'Data berhasil disimpan ke spreadsheet';
+
+      showView('success');
+
+    } else {
+
+      showAlert(
+        'alertBox',
+        '❌ ' + (result.message || 'Gagal menyimpan'),
+        'error'
+      );
+
+    }
+
+  } catch (err) {
+
+    console.error(err);
+
+    showAlert(
+      'alertBox',
+      '❌ Gagal upload / koneksi Apps Script bermasalah',
+      'error'
+    );
+
   }
 
   setLoading(false, 'submit');
 }
 
-// UPDATE
+// ================= UPDATE =================
 async function updateForm() {
+
   if (!lastRowIndex) {
-    showAlert('editAlertBox','⚠️ Tidak bisa edit: baris tidak ditemukan.','error');
+
+    showAlert(
+      'editAlertBox',
+      '⚠️ Row tidak ditemukan',
+      'error'
+    );
+
     return;
   }
 
-  const tanggal    = document.getElementById('e-tanggal').value;
-  const nama       = sdEdit.getValue();
-  const statusEl   = document.querySelector('input[name="status-edit"]:checked');
-  const keterangan = document.getElementById('e-keterangan').value.trim();
-  const fotoFile   = document.getElementById('e-foto').files[0];
-  const videoFile  = document.getElementById('e-video').files[0];
+  const tanggal =
+    document.getElementById('e-tanggal').value;
 
-  document.getElementById('editAlertBox').style.display = 'none';
+  const nama = sdEdit.getValue();
 
-  if (!tanggal)  { showAlert('editAlertBox','⚠️ Tanggal wajib diisi.','error'); return; }
-  if (!nama)     { showAlert('editAlertBox','⚠️ Nama siswa wajib dipilih.','error'); return; }
-  if (!statusEl) { showAlert('editAlertBox','⚠️ Status wajib dipilih.','error'); return; }
+  const statusEl = document.querySelector(
+    'input[name="status-edit"]:checked'
+  );
+
+  const keterangan =
+    document.getElementById('e-keterangan').value.trim();
+
+  const fotoFile =
+    document.getElementById('e-foto').files[0];
+
+  const videoFile =
+    document.getElementById('e-video').files[0];
+
+  if (!tanggal || !nama || !statusEl) {
+
+    showAlert(
+      'editAlertBox',
+      '⚠️ Lengkapi data',
+      'error'
+    );
+
+    return;
+  }
 
   setLoading(true, 'edit');
 
-  const payload = { action:'editAbsensi', rowIndex: lastRowIndex, tanggal, nama, status: statusEl.value, keterangan };
-
   try {
-    if (fotoFile)  { payload.foto = await toBase64(fotoFile); payload.fotoName = fotoFile.name; payload.fotoMime = fotoFile.type; }
-    if (videoFile) { payload.video = await toBase64(videoFile); payload.videoName = videoFile.name; payload.videoMime = videoFile.type; }
 
-    const res  = await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(payload) });
-    const json = await res.json();
+    const payload = {
+      action: 'editAbsensi',
+      rowIndex: lastRowIndex,
+      tanggal,
+      nama,
+      status: statusEl.value,
+      keterangan
+    };
 
-    if (json.status === 'ok') {
+    if (fotoFile) {
+
+      payload.foto = await toBase64(fotoFile);
+      payload.fotoName = fotoFile.name;
+      payload.fotoMime = fotoFile.type;
+
+    }
+
+    if (videoFile) {
+
+      payload.video = await toBase64(videoFile);
+      payload.videoName = videoFile.name;
+      payload.videoMime = videoFile.type;
+
+    }
+
+    const response = await fetch(SCRIPT_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'text/plain;charset=utf-8'
+      },
+      body: JSON.stringify(payload)
+    });
+
+    const result = await response.json();
+
+    if (result.status === 'ok') {
+
       lastSubmitted = {
         ...payload,
-        fotoUrl:  json.fotoUrl  || lastSubmitted.fotoUrl  || '',
-        videoUrl: json.videoUrl || lastSubmitted.videoUrl || ''
+        fotoUrl:
+          result.fotoUrl || lastSubmitted.fotoUrl || '',
+        videoUrl:
+          result.videoUrl || lastSubmitted.videoUrl || ''
       };
-      document.getElementById('summary-box').innerHTML = buildSummary(lastSubmitted);
+
+      document.getElementById(
+        'summary-box'
+      ).innerHTML = buildSummary(lastSubmitted);
+
       showView('success');
+
     } else {
-      showAlert('editAlertBox','❌ ' + (json.message || 'Gagal menyimpan perubahan'),'error');
+
+      showAlert(
+        'editAlertBox',
+        '❌ ' + result.message,
+        'error'
+      );
+
     }
-  } catch(err) {
-    showAlert('editAlertBox','❌ Gagal menghubungi server.','error');
+
+  } catch (err) {
+
+    console.error(err);
+
+    showAlert(
+      'editAlertBox',
+      '❌ Gagal update data',
+      'error'
+    );
+
   }
 
   setLoading(false, 'edit');
 }
 
-function setLoading(on, mode) {
-  if (mode === 'submit') {
-    document.getElementById('btnSubmit').disabled              = on;
-    document.getElementById('spinner').style.display           = on ? 'block' : 'none';
-    document.getElementById('btn-text').textContent            = on ? 'Mengirim...' : '📤 Kirim Presensi';
-  } else {
-    document.getElementById('btnUpdate').disabled              = on;
-    document.getElementById('spinner-edit').style.display      = on ? 'block' : 'none';
-    document.getElementById('btn-edit-text').textContent       = on ? 'Menyimpan...' : '💾 Simpan Perubahan';
-  }
+// ================= VIEW =================
+function showView(id) {
+
+  document.querySelectorAll('.view')
+    .forEach(v => v.classList.remove('active'));
+
+  document.getElementById(
+    'view-' + id
+  ).classList.add('active');
+
+  window.scrollTo({
+    top: 0,
+    behavior: 'smooth'
+  });
+}
+
+function goSuccess() {
+  showView('success');
+}
+
+function goNew() {
+
+  sdForm.reset();
+
+  document.querySelectorAll(
+    'input[name="status"]'
+  ).forEach(r => r.checked = false);
+
+  document.getElementById('f-keterangan').value = '';
+
+  ['f-foto', 'f-video'].forEach(id => {
+
+    document.getElementById(id).value = '';
+
+    document.getElementById(
+      'prev-' + id
+    ).classList.remove('show');
+
+  });
+
+  document.getElementById(
+    'f-tanggal'
+  ).valueAsDate = new Date();
+
+  showView('form');
+}
+
+function goEdit() {
+
+  if (!lastSubmitted) return;
+
+  const d = lastSubmitted;
+
+  document.getElementById('e-tanggal').value =
+    d.tanggal;
+
+  document.getElementById('e-keterangan').value =
+    d.keterangan || '';
+
+  sdEdit.setValue(d.nama);
+
+  const radio = document.querySelector(
+    `input[name="status-edit"][value="${d.status}"]`
+  );
+
+  if (radio) radio.checked = true;
+
+  showView('edit');
 }
 </script>
-</body>
-</html>
+(/body)
