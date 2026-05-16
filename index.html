@@ -81,9 +81,44 @@ input:focus,select:focus,textarea:focus{border-color:var(--accent);box-shadow:0 
 input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(1);opacity:.6;cursor:pointer;}
 textarea{resize:none;min-height:clamp(72px,15vw,90px);line-height:1.6;}
 
+/* ===================== PERTEMUAN KE DISPLAY ===================== */
+.pertemuan-box{
+  display:flex;align-items:center;gap:10px;
+  padding:clamp(11px,2.5vw,13px) clamp(12px,3vw,15px);
+  border-radius:var(--radius-sm);
+  border:1px solid var(--input-border);
+  background:rgba(255,255,255,0.04);
+  min-height:46px;
+  transition:border-color var(--tr),background var(--tr);
+}
+.pertemuan-box.loaded{
+  border-color:rgba(245,166,35,.4);
+  background:rgba(245,166,35,.06);
+}
+.pertemuan-badge{
+  font-size:18px;flex-shrink:0;line-height:1;
+}
+.pertemuan-text{
+  font-size:clamp(13px,3vw,14px);
+  color:var(--muted);
+  flex:1;
+}
+.pertemuan-text.loaded{
+  color:var(--accent);
+  font-weight:600;
+}
+.pertemuan-spin{
+  width:14px;height:14px;
+  border:2px solid rgba(245,166,35,.3);
+  border-top-color:var(--accent);
+  border-radius:50%;
+  animation:spin .7s linear infinite;
+  display:none;flex-shrink:0;margin-left:auto;
+}
+/* =============================================================== */
+
 /* ===================== SEARCHABLE DROPDOWN ===================== */
 .searchable-wrap{position:relative;}
-
 .searchable-input-row{
   display:flex;align-items:center;
   width:100%;padding:clamp(11px,2.5vw,13px) clamp(12px,3vw,15px);
@@ -104,70 +139,30 @@ textarea{resize:none;min-height:clamp(72px,15vw,90px);line-height:1.6;}
   -webkit-appearance:none;appearance:none;
 }
 .searchable-input-row input::placeholder{color:var(--muted);}
-
-.sd-chevron{
-  flex-shrink:0;margin-left:8px;color:var(--muted);
-  font-size:12px;transition:transform var(--tr);pointer-events:none;
-  user-select:none;
-}
+.sd-chevron{flex-shrink:0;margin-left:8px;color:var(--muted);font-size:12px;transition:transform var(--tr);pointer-events:none;user-select:none;}
 .searchable-input-row.open .sd-chevron{transform:rotate(180deg);}
-
-.sd-clear{
-  flex-shrink:0;margin-left:6px;color:var(--muted);
-  font-size:14px;cursor:pointer;line-height:1;
-  display:none;padding:0 2px;
-  transition:color var(--tr);
-}
+.sd-clear{flex-shrink:0;margin-left:6px;color:var(--muted);font-size:14px;cursor:pointer;line-height:1;display:none;padding:0 2px;transition:color var(--tr);}
 .sd-clear:hover{color:var(--red);}
 .sd-clear.show{display:block;}
-
 .sd-dropdown{
   position:absolute;top:calc(100% + 6px);left:0;right:0;
-  background:#1c1b28;
-  border:1px solid var(--input-border);
-  border-radius:var(--radius-sm);
-  box-shadow:0 12px 40px rgba(0,0,0,.55);
-  z-index:999;overflow:hidden;
-  display:none;
-  animation:sdIn .15s ease;
+  background:#1c1b28;border:1px solid var(--input-border);
+  border-radius:var(--radius-sm);box-shadow:0 12px 40px rgba(0,0,0,.55);
+  z-index:999;overflow:hidden;display:none;animation:sdIn .15s ease;
 }
 .sd-dropdown.open{display:block;}
 @keyframes sdIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
-
-.sd-list{
-  max-height:220px;overflow-y:auto;
-  scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.15) transparent;
-}
+.sd-list{max-height:220px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.15) transparent;}
 .sd-list::-webkit-scrollbar{width:4px;}
 .sd-list::-webkit-scrollbar-track{background:transparent;}
 .sd-list::-webkit-scrollbar-thumb{background:rgba(255,255,255,.15);border-radius:4px;}
-
-.sd-item{
-  padding:10px 14px;font-size:clamp(13px,3vw,14px);
-  cursor:pointer;color:var(--text);
-  transition:background var(--tr),color var(--tr);
-  display:flex;align-items:center;gap:8px;
-}
+.sd-item{padding:10px 14px;font-size:clamp(13px,3vw,14px);cursor:pointer;color:var(--text);transition:background var(--tr),color var(--tr);display:flex;align-items:center;gap:8px;}
 .sd-item:hover,.sd-item.focused{background:rgba(245,166,35,.12);color:var(--accent);}
 .sd-item.selected{color:var(--accent);font-weight:600;}
-.sd-item .sd-initial{
-  width:26px;height:26px;border-radius:50%;
-  background:rgba(245,166,35,.15);color:var(--accent);
-  font-size:11px;font-weight:700;letter-spacing:.5px;
-  display:flex;align-items:center;justify-content:center;flex-shrink:0;
-}
+.sd-item .sd-initial{width:26px;height:26px;border-radius:50%;background:rgba(245,166,35,.15);color:var(--accent);font-size:11px;font-weight:700;letter-spacing:.5px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
 .sd-item.selected .sd-initial{background:rgba(245,166,35,.25);}
-
-.sd-empty{
-  padding:16px 14px;text-align:center;
-  color:var(--muted);font-size:13px;
-}
-
-.sd-letter-group{
-  padding:6px 14px 2px;font-size:10px;font-weight:700;
-  letter-spacing:1.5px;text-transform:uppercase;color:rgba(245,166,35,.45);
-  border-top:1px solid rgba(255,255,255,.05);
-}
+.sd-empty{padding:16px 14px;text-align:center;color:var(--muted);font-size:13px;}
+.sd-letter-group{padding:6px 14px 2px;font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(245,166,35,.45);border-top:1px solid rgba(255,255,255,.05);}
 .sd-letter-group:first-child{border-top:none;}
 /* ============================================================== */
 
@@ -218,12 +213,13 @@ textarea{resize:none;min-height:clamp(72px,15vw,90px);line-height:1.6;}
 .data-summary{background:var(--input-bg);border:1px solid var(--input-border);border-radius:var(--radius-sm);padding:clamp(12px,3vw,16px);margin-bottom:20px;text-align:left;}
 .data-row{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;padding:6px 0;font-size:clamp(12px,2.5vw,13px);border-bottom:1px solid rgba(255,255,255,.05);}
 .data-row:last-child{border-bottom:none;}
-.data-key{color:var(--muted);font-weight:500;flex-shrink:0;min-width:85px;}
+.data-key{color:var(--muted);font-weight:500;flex-shrink:0;min-width:100px;}
 .data-val{text-align:right;word-break:break-all;font-weight:500;}
 .badge{display:inline-block;padding:2px 10px;border-radius:20px;font-size:11px;font-weight:600;}
 .badge-hadir{background:var(--green-bg);color:var(--green);border:1px solid rgba(74,222,128,.3);}
 .badge-izin{background:var(--amber-bg);color:var(--amber);border:1px solid rgba(251,191,36,.3);}
 .badge-alpha{background:var(--red-bg);color:var(--red);border:1px solid rgba(248,113,113,.3);}
+.badge-pertemuan{background:rgba(245,166,35,.15);color:var(--accent);border:1px solid rgba(245,166,35,.3);}
 
 /* BTN ROW */
 .btn-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
@@ -262,7 +258,9 @@ textarea{resize:none;min-height:clamp(72px,15vw,90px);line-height:1.6;}
       <div class="subtitle">Home Music Course — Presensi Siswa</div>
     </div>
 
-    <!-- VIEW: FORM -->
+    <!-- ======================================================= -->
+    <!-- VIEW: FORM TAMBAH                                        -->
+    <!-- ======================================================= -->
     <div id="view-form" class="view active">
       <div class="form-body">
 
@@ -270,14 +268,15 @@ textarea{resize:none;min-height:clamp(72px,15vw,90px);line-height:1.6;}
 
         <div class="section-label">Data Kehadiran</div>
 
+        <!-- Tanggal -->
         <div class="field">
           <label>Tanggal <span class="req">*</span></label>
           <input type="date" id="f-tanggal" required />
         </div>
 
+        <!-- Nama Siswa -->
         <div class="field">
           <label>Nama Siswa <span class="req">*</span></label>
-          <!-- Searchable dropdown untuk form tambah -->
           <div class="searchable-wrap" id="sd-form">
             <div class="searchable-input-row" id="sd-form-row">
               <input type="text" id="sd-form-input" placeholder="Cari atau pilih nama siswa..." autocomplete="off" />
@@ -287,11 +286,22 @@ textarea{resize:none;min-height:clamp(72px,15vw,90px);line-height:1.6;}
             <div class="sd-dropdown" id="sd-form-dropdown">
               <div class="sd-list" id="sd-form-list"></div>
             </div>
-            <!-- Hidden field untuk menyimpan value terpilih -->
             <input type="hidden" id="f-nama" />
           </div>
         </div>
 
+        <!-- Pertemuan Ke — otomatis setelah nama dipilih -->
+        <div class="field">
+          <label>Pertemuan Ke</label>
+          <div class="pertemuan-box" id="f-pertemuan-box">
+            <span class="pertemuan-badge">📅</span>
+            <span class="pertemuan-text" id="f-pertemuan-text">Pilih nama siswa dahulu...</span>
+            <div class="pertemuan-spin" id="f-pertemuan-spin"></div>
+          </div>
+          <input type="hidden" id="f-pertemuan" />
+        </div>
+
+        <!-- Status -->
         <div class="field">
           <label>Status Kehadiran <span class="req">*</span></label>
           <div class="status-grid">
@@ -310,6 +320,7 @@ textarea{resize:none;min-height:clamp(72px,15vw,90px);line-height:1.6;}
           </div>
         </div>
 
+        <!-- Keterangan -->
         <div class="field">
           <label>Keterangan</label>
           <textarea id="f-keterangan" placeholder="Tambahkan catatan jika diperlukan..."></textarea>
@@ -318,6 +329,7 @@ textarea{resize:none;min-height:clamp(72px,15vw,90px);line-height:1.6;}
         <hr class="divider" />
         <div class="section-label">Dokumentasi (Opsional)</div>
 
+        <!-- Foto -->
         <div class="field">
           <label>Foto</label>
           <div class="upload-area">
@@ -329,6 +341,7 @@ textarea{resize:none;min-height:clamp(72px,15vw,90px);line-height:1.6;}
           </div>
         </div>
 
+        <!-- Video -->
         <div class="field">
           <label>Video</label>
           <div class="upload-area">
@@ -348,7 +361,9 @@ textarea{resize:none;min-height:clamp(72px,15vw,90px);line-height:1.6;}
       </div>
     </div>
 
-    <!-- VIEW: SUCCESS -->
+    <!-- ======================================================= -->
+    <!-- VIEW: SUCCESS                                            -->
+    <!-- ======================================================= -->
     <div id="view-success" class="view">
       <div class="success-view">
         <div class="success-icon">✅</div>
@@ -364,7 +379,9 @@ textarea{resize:none;min-height:clamp(72px,15vw,90px);line-height:1.6;}
       </div>
     </div>
 
-    <!-- VIEW: EDIT -->
+    <!-- ======================================================= -->
+    <!-- VIEW: EDIT                                               -->
+    <!-- ======================================================= -->
     <div id="view-edit" class="view">
       <div class="form-body">
 
@@ -374,14 +391,15 @@ textarea{resize:none;min-height:clamp(72px,15vw,90px);line-height:1.6;}
 
         <div class="section-label">Edit Data Kehadiran</div>
 
+        <!-- Tanggal edit -->
         <div class="field">
           <label>Tanggal <span class="req">*</span></label>
           <input type="date" id="e-tanggal" required />
         </div>
 
+        <!-- Nama Siswa edit -->
         <div class="field">
           <label>Nama Siswa <span class="req">*</span></label>
-          <!-- Searchable dropdown untuk form edit -->
           <div class="searchable-wrap" id="sd-edit">
             <div class="searchable-input-row" id="sd-edit-row">
               <input type="text" id="sd-edit-input" placeholder="Cari atau pilih nama siswa..." autocomplete="off" />
@@ -395,6 +413,20 @@ textarea{resize:none;min-height:clamp(72px,15vw,90px);line-height:1.6;}
           </div>
         </div>
 
+        <!-- Pertemuan Ke edit — readonly -->
+        <div class="field">
+          <label>Pertemuan Ke</label>
+          <div class="pertemuan-box loaded" id="e-pertemuan-box">
+            <span class="pertemuan-badge">📅</span>
+            <span class="pertemuan-text loaded" id="e-pertemuan-text">—</span>
+          </div>
+          <input type="hidden" id="e-pertemuan" />
+          <div style="font-size:11px;color:var(--muted);margin-top:5px;padding-left:2px;">
+            ℹ️ Pertemuan ke tidak berubah saat edit
+          </div>
+        </div>
+
+        <!-- Status edit -->
         <div class="field">
           <label>Status Kehadiran <span class="req">*</span></label>
           <div class="status-grid">
@@ -413,6 +445,7 @@ textarea{resize:none;min-height:clamp(72px,15vw,90px);line-height:1.6;}
           </div>
         </div>
 
+        <!-- Keterangan edit -->
         <div class="field">
           <label>Keterangan</label>
           <textarea id="e-keterangan" placeholder="Tambahkan catatan jika diperlukan..."></textarea>
@@ -421,6 +454,7 @@ textarea{resize:none;min-height:clamp(72px,15vw,90px);line-height:1.6;}
         <hr class="divider" />
         <div class="section-label">Dokumentasi (kosongkan jika tidak ingin mengubah)</div>
 
+        <!-- Foto edit -->
         <div class="field">
           <label>Foto Baru</label>
           <div class="upload-area">
@@ -432,6 +466,7 @@ textarea{resize:none;min-height:clamp(72px,15vw,90px);line-height:1.6;}
           </div>
         </div>
 
+        <!-- Video edit -->
         <div class="field">
           <label>Video Baru</label>
           <div class="upload-area">
@@ -462,17 +497,18 @@ textarea{resize:none;min-height:clamp(72px,15vw,90px);line-height:1.6;}
 // ============================================================
 // GANTI dengan URL deployment Google Apps Script kamu
 // ============================================================
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby09kDgxtlSKeCUT4N-ZA3JatqQ2YV5dGCJoRhM_wia_pL_ZsdqzxbBautGAjQ-K4lX/exec';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzn7rO-ilAQUQWGcoAx1wEUeHC2-0RLMl_gYN9rUD0OJb7YqH3ui_YB4R61XZ761csW/exec';
 // ============================================================
 
 let lastSubmitted = null;
 let lastRowIndex  = null;
-let allSiswa      = [];   // master list, sudah diurutkan abjad
+let allSiswa      = [];
 
-// ===================== SEARCHABLE DROPDOWN ENGINE =====================
+// =====================================================================
+// SEARCHABLE DROPDOWN CLASS
+// =====================================================================
 class SearchableDropdown {
   constructor(cfg) {
-    // cfg: { wrapId, rowId, inputId, clearId, dropdownId, listId, hiddenId }
     this.wrap     = document.getElementById(cfg.wrapId);
     this.row      = document.getElementById(cfg.rowId);
     this.input    = document.getElementById(cfg.inputId);
@@ -480,31 +516,31 @@ class SearchableDropdown {
     this.dropdown = document.getElementById(cfg.dropdownId);
     this.list     = document.getElementById(cfg.listId);
     this.hidden   = document.getElementById(cfg.hiddenId);
-    this.items    = [];      // array of strings
+    this.items    = [];
     this.selected = '';
     this.focusIdx = -1;
+    this.onSelect = cfg.onSelect || null;
     this._bind();
   }
 
   setItems(arr) {
-    // Urutkan abjad (case-insensitive), tidak berubah setelah init
-    this.items = [...arr].sort((a,b) => a.localeCompare(b, 'id', {sensitivity:'base'}));
+    this.items = [...arr].sort((a, b) => a.localeCompare(b, 'id', { sensitivity: 'base' }));
     this._renderList('');
   }
 
   setValue(val) {
-    this.selected = val;
-    this.input.value = val;
+    this.selected     = val;
+    this.input.value  = val;
     this.hidden.value = val;
     this._toggleClear();
     this._renderList(this.input.value);
   }
 
   reset() {
-    this.selected = '';
-    this.input.value = '';
+    this.selected     = '';
+    this.input.value  = '';
     this.hidden.value = '';
-    this.focusIdx = -1;
+    this.focusIdx     = -1;
     this._toggleClear();
     this._close();
     this._renderList('');
@@ -513,16 +549,12 @@ class SearchableDropdown {
   getValue() { return this.hidden.value; }
 
   _bind() {
-    // Buka dropdown saat klik area atau fokus input
-    this.row.addEventListener('click', () => {
-      this._open();
-      this.input.focus();
-    });
+    this.row.addEventListener('click', () => { this._open(); this.input.focus(); });
 
     this.input.addEventListener('input', () => {
-      this.selected = '';
+      this.selected     = '';
       this.hidden.value = '';
-      this.focusIdx = -1;
+      this.focusIdx     = -1;
       this._toggleClear();
       this._renderList(this.input.value);
       this._open();
@@ -535,9 +567,9 @@ class SearchableDropdown {
       this.reset();
       this.input.focus();
       this._open();
+      if (this.onSelect) this.onSelect('');
     });
 
-    // Tutup dropdown kalau klik di luar
     document.addEventListener('click', e => {
       if (!this.wrap.contains(e.target)) this._close();
     });
@@ -553,81 +585,69 @@ class SearchableDropdown {
     this.row.classList.remove('open');
     this.dropdown.classList.remove('open');
     this.focusIdx = -1;
-    // Kalau ada selected, pastikan input menampilkannya kembali
     if (this.selected) this.input.value = this.selected;
     else if (!this.hidden.value) this.input.value = '';
   }
 
   _toggleClear() {
-    if (this.input.value || this.selected) {
-      this.clearBtn.classList.add('show');
-    } else {
-      this.clearBtn.classList.remove('show');
-    }
+    if (this.input.value || this.selected) this.clearBtn.classList.add('show');
+    else this.clearBtn.classList.remove('show');
   }
 
   _renderList(query) {
-    const q = query.trim().toLowerCase();
-    const filtered = q
-      ? this.items.filter(n => n.toLowerCase().includes(q))
-      : this.items;
+    const q        = query.trim().toLowerCase();
+    const filtered = q ? this.items.filter(n => n.toLowerCase().includes(q)) : this.items;
 
     if (!filtered.length) {
       this.list.innerHTML = `<div class="sd-empty">Tidak ditemukan</div>`;
       return;
     }
 
-    // Kelompokkan per huruf pertama
     let html = '';
     let lastLetter = '';
-    filtered.forEach((name, i) => {
+    filtered.forEach(name => {
       const letter = name[0].toUpperCase();
       if (letter !== lastLetter) {
         html += `<div class="sd-letter-group">${letter}</div>`;
         lastLetter = letter;
       }
-      const initial  = name.substring(0,2).toUpperCase();
-      const isSel    = name === this.selected;
-      const display  = q ? this._highlight(name, q) : name;
-      html += `<div class="sd-item${isSel?' selected':''}" data-val="${name}" data-i="${i}">
+      const initial = name.substring(0, 2).toUpperCase();
+      const isSel   = name === this.selected;
+      const display = q ? this._highlight(name, q) : name;
+      html += `<div class="sd-item${isSel ? ' selected' : ''}" data-val="${name}">
         <span class="sd-initial">${initial}</span>${display}
       </div>`;
     });
     this.list.innerHTML = html;
 
-    // Event listener pada item
     this.list.querySelectorAll('.sd-item').forEach(el => {
-      el.addEventListener('mousedown', e => {
-        e.preventDefault();
-        this._select(el.dataset.val);
-      });
+      el.addEventListener('mousedown', e => { e.preventDefault(); this._select(el.dataset.val); });
     });
 
-    // Scroll ke selected
     const sel = this.list.querySelector('.sd-item.selected');
-    if (sel) sel.scrollIntoView({block:'nearest'});
+    if (sel) sel.scrollIntoView({ block: 'nearest' });
   }
 
   _highlight(name, q) {
     const idx = name.toLowerCase().indexOf(q);
     if (idx === -1) return name;
-    return name.substring(0,idx) +
-      `<mark style="background:rgba(245,166,35,.3);color:var(--accent);border-radius:2px;">${name.substring(idx,idx+q.length)}</mark>` +
-      name.substring(idx+q.length);
+    return name.substring(0, idx) +
+      `<mark style="background:rgba(245,166,35,.3);color:var(--accent);border-radius:2px;">${name.substring(idx, idx + q.length)}</mark>` +
+      name.substring(idx + q.length);
   }
 
   _select(val) {
-    this.selected  = val;
+    this.selected     = val;
     this.hidden.value = val;
     this.input.value  = val;
     this._toggleClear();
     this._close();
+    if (this.onSelect) this.onSelect(val);
   }
 
   _onKey(e) {
     const items = [...this.list.querySelectorAll('.sd-item')];
     if (!items.length) return;
-
     if (e.key === 'ArrowDown') {
       e.preventDefault();
       this.focusIdx = Math.min(this.focusIdx + 1, items.length - 1);
@@ -638,37 +658,100 @@ class SearchableDropdown {
       this._applyFocus(items);
     } else if (e.key === 'Enter') {
       e.preventDefault();
-      if (this.focusIdx >= 0 && items[this.focusIdx]) {
-        this._select(items[this.focusIdx].dataset.val);
-      }
+      if (this.focusIdx >= 0 && items[this.focusIdx]) this._select(items[this.focusIdx].dataset.val);
     } else if (e.key === 'Escape') {
       this._close();
     }
   }
 
   _applyFocus(items) {
-    items.forEach((el,i) => {
+    items.forEach((el, i) => {
       el.classList.toggle('focused', i === this.focusIdx);
-      if (i === this.focusIdx) el.scrollIntoView({block:'nearest'});
+      if (i === this.focusIdx) el.scrollIntoView({ block: 'nearest' });
     });
   }
 }
 
-// Instansiasi dua dropdown
+// =====================================================================
+// FETCH PERTEMUAN KE — dipanggil otomatis saat nama dipilih di form baru
+// =====================================================================
+async function fetchPertemuan(nama, boxId, textId, spinId, hiddenId) {
+  const box    = document.getElementById(boxId);
+  const text   = document.getElementById(textId);
+  const spin   = spinId ? document.getElementById(spinId) : null;
+  const hidden = document.getElementById(hiddenId);
+
+  // Nama dikosongkan — reset tampilan
+  if (!nama) {
+    box.classList.remove('loaded');
+    text.classList.remove('loaded');
+    text.textContent = 'Pilih nama siswa dahulu...';
+    hidden.value = '';
+    return;
+  }
+
+  // Loading state
+  text.classList.remove('loaded');
+  box.classList.remove('loaded');
+  text.textContent = 'Mengambil data...';
+  if (spin) spin.style.display = 'block';
+  hidden.value = '';
+
+  try {
+    const res  = await fetch(SCRIPT_URL + '?action=getPertemuan&nama=' + encodeURIComponent(nama));
+    const json = await res.json();
+
+    if (json.status === 'ok') {
+      const ke     = json.pertemuanKe;
+      hidden.value = ke;
+      text.textContent = 'Pertemuan ke-' + ke;
+      text.classList.add('loaded');
+      box.classList.add('loaded');
+    } else {
+      text.textContent = '⚠️ Gagal mengambil data';
+    }
+  } catch (e) {
+    text.textContent = '⚠️ Gagal menghubungi server';
+  }
+
+  if (spin) spin.style.display = 'none';
+}
+
+// =====================================================================
+// INISIALISASI DROPDOWN
+// =====================================================================
 const sdForm = new SearchableDropdown({
-  wrapId:'sd-form', rowId:'sd-form-row', inputId:'sd-form-input',
-  clearId:'sd-form-clear', dropdownId:'sd-form-dropdown',
-  listId:'sd-form-list', hiddenId:'f-nama'
+  wrapId    : 'sd-form',
+  rowId     : 'sd-form-row',
+  inputId   : 'sd-form-input',
+  clearId   : 'sd-form-clear',
+  dropdownId: 'sd-form-dropdown',
+  listId    : 'sd-form-list',
+  hiddenId  : 'f-nama',
+  // Saat nama dipilih → fetch pertemuan ke otomatis
+  onSelect  : (nama) => fetchPertemuan(
+    nama,
+    'f-pertemuan-box',
+    'f-pertemuan-text',
+    'f-pertemuan-spin',
+    'f-pertemuan'
+  )
 });
+
 const sdEdit = new SearchableDropdown({
-  wrapId:'sd-edit', rowId:'sd-edit-row', inputId:'sd-edit-input',
-  clearId:'sd-edit-clear', dropdownId:'sd-edit-dropdown',
-  listId:'sd-edit-list', hiddenId:'e-nama'
+  wrapId    : 'sd-edit',
+  rowId     : 'sd-edit-row',
+  inputId   : 'sd-edit-input',
+  clearId   : 'sd-edit-clear',
+  dropdownId: 'sd-edit-dropdown',
+  listId    : 'sd-edit-list',
+  hiddenId  : 'e-nama'
+  // Edit: pertemuan ke diisi dari lastSubmitted, tidak refetch
 });
 
-// ======================================================================
-
+// =====================================================================
 // INIT
+// =====================================================================
 document.getElementById('f-tanggal').valueAsDate = new Date();
 document.getElementById('e-tanggal').valueAsDate = new Date();
 loadSiswa();
@@ -677,18 +760,17 @@ async function loadSiswa() {
   try {
     const res  = await fetch(SCRIPT_URL + '?action=getSiswa');
     const json = await res.json();
-    // Urutkan abjad di sini (SearchableDropdown juga mengurutkan, double safety)
-    allSiswa = (json.siswa || []).sort((a,b) =>
-      a.localeCompare(b, 'id', {sensitivity:'base'})
-    );
+    allSiswa   = (json.siswa || []).sort((a, b) => a.localeCompare(b, 'id', { sensitivity: 'base' }));
     sdForm.setItems(allSiswa);
     sdEdit.setItems(allSiswa);
-  } catch(e) {
+  } catch (e) {
     console.warn('Gagal load siswa:', e);
   }
 }
 
-// VIEWS
+// =====================================================================
+// NAVIGASI VIEW
+// =====================================================================
 function showView(id) {
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
   document.getElementById('view-' + id).classList.add('active');
@@ -696,15 +778,25 @@ function showView(id) {
 }
 
 function goNew() {
+  // Reset form
   sdForm.reset();
   document.querySelectorAll('input[name="status"]').forEach(r => r.checked = false);
   document.getElementById('f-keterangan').value = '';
-  ['f-foto','f-video'].forEach(id => {
+  ['f-foto', 'f-video'].forEach(id => {
     document.getElementById(id).value = '';
     document.getElementById('prev-' + id).classList.remove('show');
   });
   document.getElementById('f-tanggal').valueAsDate = new Date();
   document.getElementById('alertBox').style.display = 'none';
+
+  // Reset pertemuan display
+  const box  = document.getElementById('f-pertemuan-box');
+  const text = document.getElementById('f-pertemuan-text');
+  box.classList.remove('loaded');
+  text.classList.remove('loaded');
+  text.textContent = 'Pilih nama siswa dahulu...';
+  document.getElementById('f-pertemuan').value = '';
+
   showView('form');
 }
 
@@ -713,6 +805,7 @@ function goSuccess() { showView('success'); }
 function goEdit() {
   if (!lastSubmitted) return;
   const d = lastSubmitted;
+
   document.getElementById('e-tanggal').value    = d.tanggal;
   document.getElementById('e-keterangan').value = d.keterangan || '';
 
@@ -721,7 +814,12 @@ function goEdit() {
   const r = document.querySelector(`input[name="status-edit"][value="${d.status}"]`);
   if (r) r.checked = true;
 
-  ['e-foto','e-video'].forEach(id => {
+  // Isi pertemuan ke dari data yang sudah tersimpan (tidak berubah saat edit)
+  const ke = d.pertemuanKe || '—';
+  document.getElementById('e-pertemuan').value = ke;
+  document.getElementById('e-pertemuan-text').textContent = 'Pertemuan ke-' + ke;
+
+  ['e-foto', 'e-video'].forEach(id => {
     document.getElementById(id).value = '';
     document.getElementById('prev-' + id).classList.remove('show');
   });
@@ -730,9 +828,11 @@ function goEdit() {
   showView('edit');
 }
 
-// FILE
+// =====================================================================
+// FILE UPLOAD
+// =====================================================================
 function onFileChange(inputId) {
-  const input = document.getElementById(inputId);
+  const input   = document.getElementById(inputId);
   if (!input.files[0]) return;
   const isVideo = input.accept.includes('video');
   const maxMB   = isVideo ? 50 : 5;
@@ -741,9 +841,8 @@ function onFileChange(inputId) {
     input.value = '';
     return;
   }
-  const prev = document.getElementById('prev-' + inputId);
   document.getElementById('prev-' + inputId + '-name').textContent = input.files[0].name;
-  prev.classList.add('show');
+  document.getElementById('prev-' + inputId).classList.add('show');
 }
 
 function toBase64(file) {
@@ -755,99 +854,66 @@ function toBase64(file) {
   });
 }
 
+// =====================================================================
+// ALERT
+// =====================================================================
 function showAlert(boxId, msg, type) {
   const b = document.getElementById(boxId);
-  b.className = 'alert ' + type;
-  b.textContent = msg;
+  b.className     = 'alert ' + type;
+  b.textContent   = msg;
   b.style.display = 'flex';
 }
 
+// =====================================================================
+// BUILD SUMMARY
+// =====================================================================
 function statusBadge(s) {
-  const cls = { Hadir:'badge-hadir', Izin:'badge-izin', Alpha:'badge-alpha' };
-  return `<span class="badge ${cls[s]||''}">${s}</span>`;
+  const cls = { Hadir: 'badge-hadir', Izin: 'badge-izin', Alpha: 'badge-alpha' };
+  return `<span class="badge ${cls[s] || ''}">${s}</span>`;
 }
 
 function buildSummary(d) {
   const rows = [
-    ['Tanggal',    d.tanggal],
-    ['Nama',       d.nama],
-    ['Status',     statusBadge(d.status)],
-    ['Keterangan', d.keterangan || '—'],
-    ['Foto',       d.fotoUrl  ? `<a href="${d.fotoUrl}"  target="_blank" style="color:var(--accent)">Lihat foto ↗</a>`  : '—'],
-    ['Video',      d.videoUrl ? `<a href="${d.videoUrl}" target="_blank" style="color:var(--accent)">Lihat video ↗</a>` : '—'],
+    ['Tanggal',      d.tanggal],
+    ['Nama',         d.nama],
+    ['Pertemuan Ke', `<span class="badge badge-pertemuan">Ke-${d.pertemuanKe || '—'}</span>`],
+    ['Status',       statusBadge(d.status)],
+    ['Keterangan',   d.keterangan || '—'],
+    ['Foto',         d.fotoUrl  ? `<a href="${d.fotoUrl}"  target="_blank" style="color:var(--accent)">Lihat foto ↗</a>`  : '—'],
+    ['Video',        d.videoUrl ? `<a href="${d.videoUrl}" target="_blank" style="color:var(--accent)">Lihat video ↗</a>` : '—'],
   ];
-  return rows.map(([k,v]) =>
+  return rows.map(([k, v]) =>
     `<div class="data-row"><span class="data-key">${k}</span><span class="data-val">${v}</span></div>`
   ).join('');
 }
 
-// SUBMIT
+// =====================================================================
+// SUBMIT BARU
+// =====================================================================
 async function submitForm() {
   const tanggal    = document.getElementById('f-tanggal').value;
   const nama       = sdForm.getValue();
   const statusEl   = document.querySelector('input[name="status"]:checked');
   const keterangan = document.getElementById('f-keterangan').value.trim();
+  const pertemuan  = document.getElementById('f-pertemuan').value;
   const fotoFile   = document.getElementById('f-foto').files[0];
   const videoFile  = document.getElementById('f-video').files[0];
 
   document.getElementById('alertBox').style.display = 'none';
 
-  if (!tanggal)  { showAlert('alertBox','⚠️ Tanggal wajib diisi.','error'); return; }
-  if (!nama)     { showAlert('alertBox','⚠️ Nama siswa wajib dipilih.','error'); return; }
-  if (!statusEl) { showAlert('alertBox','⚠️ Status kehadiran wajib dipilih.','error'); return; }
+  if (!tanggal)  { showAlert('alertBox', '⚠️ Tanggal wajib diisi.', 'error'); return; }
+  if (!nama)     { showAlert('alertBox', '⚠️ Nama siswa wajib dipilih.', 'error'); return; }
+  if (!statusEl) { showAlert('alertBox', '⚠️ Status kehadiran wajib dipilih.', 'error'); return; }
 
   setLoading(true, 'submit');
 
-  const payload = { tanggal, nama, status: statusEl.value, keterangan };
-
-  try {
-    if (fotoFile)  { payload.foto = await toBase64(fotoFile); payload.fotoName = fotoFile.name; payload.fotoMime = fotoFile.type; }
-    if (videoFile) { payload.video = await toBase64(videoFile); payload.videoName = videoFile.name; payload.videoMime = videoFile.type; }
-
-    const res  = await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(payload) });
-    const json = await res.json();
-
-    if (json.status === 'ok') {
-      lastSubmitted = { ...payload, fotoUrl: json.fotoUrl || '', videoUrl: json.videoUrl || '' };
-      lastRowIndex  = json.rowIndex || null;
-
-      document.getElementById('success-sub').textContent =
-        'ID: ' + (json.id || '—') + ' · Tersimpan di spreadsheet';
-      document.getElementById('summary-box').innerHTML = buildSummary(lastSubmitted);
-      showView('success');
-    } else {
-      showAlert('alertBox','❌ ' + (json.message || 'Gagal menyimpan'),'error');
-    }
-  } catch(err) {
-    showAlert('alertBox','❌ Gagal menghubungi server. Cek URL Apps Script.','error');
-  }
-
-  setLoading(false, 'submit');
-}
-
-// UPDATE
-async function updateForm() {
-  if (!lastRowIndex) {
-    showAlert('editAlertBox','⚠️ Tidak bisa edit: baris tidak ditemukan.','error');
-    return;
-  }
-
-  const tanggal    = document.getElementById('e-tanggal').value;
-  const nama       = sdEdit.getValue();
-  const statusEl   = document.querySelector('input[name="status-edit"]:checked');
-  const keterangan = document.getElementById('e-keterangan').value.trim();
-  const fotoFile   = document.getElementById('e-foto').files[0];
-  const videoFile  = document.getElementById('e-video').files[0];
-
-  document.getElementById('editAlertBox').style.display = 'none';
-
-  if (!tanggal)  { showAlert('editAlertBox','⚠️ Tanggal wajib diisi.','error'); return; }
-  if (!nama)     { showAlert('editAlertBox','⚠️ Nama siswa wajib dipilih.','error'); return; }
-  if (!statusEl) { showAlert('editAlertBox','⚠️ Status wajib dipilih.','error'); return; }
-
-  setLoading(true, 'edit');
-
-  const payload = { action:'editAbsensi', rowIndex: lastRowIndex, tanggal, nama, status: statusEl.value, keterangan };
+  const payload = {
+    tanggal,
+    nama,
+    status      : statusEl.value,
+    keterangan,
+    pertemuanKe : pertemuan || 1
+  };
 
   try {
     if (fotoFile)  { payload.foto = await toBase64(fotoFile); payload.fotoName = fotoFile.name; payload.fotoMime = fotoFile.type; }
@@ -859,30 +925,99 @@ async function updateForm() {
     if (json.status === 'ok') {
       lastSubmitted = {
         ...payload,
-        fotoUrl:  json.fotoUrl  || lastSubmitted.fotoUrl  || '',
-        videoUrl: json.videoUrl || lastSubmitted.videoUrl || ''
+        pertemuanKe : json.pertemuanKe || pertemuan || 1,
+        fotoUrl     : json.fotoUrl  || '',
+        videoUrl    : json.videoUrl || ''
+      };
+      lastRowIndex = json.rowIndex || null;
+
+      document.getElementById('success-sub').textContent =
+        'ID: ' + (json.id || '—') + ' · Tersimpan di spreadsheet';
+      document.getElementById('summary-box').innerHTML = buildSummary(lastSubmitted);
+      showView('success');
+    } else {
+      showAlert('alertBox', '❌ ' + (json.message || 'Gagal menyimpan'), 'error');
+    }
+  } catch (err) {
+    showAlert('alertBox', '❌ Gagal menghubungi server. Cek URL Apps Script.', 'error');
+  }
+
+  setLoading(false, 'submit');
+}
+
+// =====================================================================
+// UPDATE / EDIT
+// =====================================================================
+async function updateForm() {
+  if (!lastRowIndex) {
+    showAlert('editAlertBox', '⚠️ Tidak bisa edit: baris tidak ditemukan.', 'error');
+    return;
+  }
+
+  const tanggal    = document.getElementById('e-tanggal').value;
+  const nama       = sdEdit.getValue();
+  const statusEl   = document.querySelector('input[name="status-edit"]:checked');
+  const keterangan = document.getElementById('e-keterangan').value.trim();
+  const pertemuan  = document.getElementById('e-pertemuan').value;
+  const fotoFile   = document.getElementById('e-foto').files[0];
+  const videoFile  = document.getElementById('e-video').files[0];
+
+  document.getElementById('editAlertBox').style.display = 'none';
+
+  if (!tanggal)  { showAlert('editAlertBox', '⚠️ Tanggal wajib diisi.', 'error'); return; }
+  if (!nama)     { showAlert('editAlertBox', '⚠️ Nama siswa wajib dipilih.', 'error'); return; }
+  if (!statusEl) { showAlert('editAlertBox', '⚠️ Status wajib dipilih.', 'error'); return; }
+
+  setLoading(true, 'edit');
+
+  const payload = {
+    action      : 'editAbsensi',
+    rowIndex    : lastRowIndex,
+    tanggal,
+    nama,
+    status      : statusEl.value,
+    keterangan,
+    pertemuanKe : pertemuan
+  };
+
+  try {
+    if (fotoFile)  { payload.foto = await toBase64(fotoFile); payload.fotoName = fotoFile.name; payload.fotoMime = fotoFile.type; }
+    if (videoFile) { payload.video = await toBase64(videoFile); payload.videoName = videoFile.name; payload.videoMime = videoFile.type; }
+
+    const res  = await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(payload) });
+    const json = await res.json();
+
+    if (json.status === 'ok') {
+      lastSubmitted = {
+        ...payload,
+        pertemuanKe : json.pertemuanKe || pertemuan,
+        fotoUrl     : json.fotoUrl  || lastSubmitted.fotoUrl  || '',
+        videoUrl    : json.videoUrl || lastSubmitted.videoUrl || ''
       };
       document.getElementById('summary-box').innerHTML = buildSummary(lastSubmitted);
       showView('success');
     } else {
-      showAlert('editAlertBox','❌ ' + (json.message || 'Gagal menyimpan perubahan'),'error');
+      showAlert('editAlertBox', '❌ ' + (json.message || 'Gagal menyimpan perubahan'), 'error');
     }
-  } catch(err) {
-    showAlert('editAlertBox','❌ Gagal menghubungi server.','error');
+  } catch (err) {
+    showAlert('editAlertBox', '❌ Gagal menghubungi server.', 'error');
   }
 
   setLoading(false, 'edit');
 }
 
+// =====================================================================
+// LOADING STATE
+// =====================================================================
 function setLoading(on, mode) {
   if (mode === 'submit') {
-    document.getElementById('btnSubmit').disabled              = on;
-    document.getElementById('spinner').style.display           = on ? 'block' : 'none';
-    document.getElementById('btn-text').textContent            = on ? 'Mengirim...' : '📤 Kirim Presensi';
+    document.getElementById('btnSubmit').disabled         = on;
+    document.getElementById('spinner').style.display      = on ? 'block' : 'none';
+    document.getElementById('btn-text').textContent       = on ? 'Mengirim...' : '📤 Kirim Presensi';
   } else {
-    document.getElementById('btnUpdate').disabled              = on;
-    document.getElementById('spinner-edit').style.display      = on ? 'block' : 'none';
-    document.getElementById('btn-edit-text').textContent       = on ? 'Menyimpan...' : '💾 Simpan Perubahan';
+    document.getElementById('btnUpdate').disabled         = on;
+    document.getElementById('spinner-edit').style.display = on ? 'block' : 'none';
+    document.getElementById('btn-edit-text').textContent  = on ? 'Menyimpan...' : '💾 Simpan Perubahan';
   }
 }
 </script>
