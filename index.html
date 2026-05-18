@@ -81,7 +81,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--accent);box-shadow:0 
 input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(1);opacity:.6;cursor:pointer;}
 textarea{resize:none;min-height:clamp(72px,15vw,90px);line-height:1.6;}
 
-/* ===================== PERTEMUAN KE DISPLAY ===================== */
+/* PERTEMUAN KE DISPLAY */
 .pertemuan-box{
   display:flex;align-items:center;gap:10px;
   padding:clamp(11px,2.5vw,13px) clamp(12px,3vw,15px);
@@ -95,18 +95,9 @@ textarea{resize:none;min-height:clamp(72px,15vw,90px);line-height:1.6;}
   border-color:rgba(245,166,35,.4);
   background:rgba(245,166,35,.06);
 }
-.pertemuan-badge{
-  font-size:18px;flex-shrink:0;line-height:1;
-}
-.pertemuan-text{
-  font-size:clamp(13px,3vw,14px);
-  color:var(--muted);
-  flex:1;
-}
-.pertemuan-text.loaded{
-  color:var(--accent);
-  font-weight:600;
-}
+.pertemuan-badge{font-size:18px;flex-shrink:0;line-height:1;}
+.pertemuan-text{font-size:clamp(13px,3vw,14px);color:var(--muted);flex:1;}
+.pertemuan-text.loaded{color:var(--accent);font-weight:600;}
 .pertemuan-spin{
   width:14px;height:14px;
   border:2px solid rgba(245,166,35,.3);
@@ -115,9 +106,8 @@ textarea{resize:none;min-height:clamp(72px,15vw,90px);line-height:1.6;}
   animation:spin .7s linear infinite;
   display:none;flex-shrink:0;margin-left:auto;
 }
-/* =============================================================== */
 
-/* ===================== SEARCHABLE DROPDOWN ===================== */
+/* SEARCHABLE DROPDOWN */
 .searchable-wrap{position:relative;}
 .searchable-input-row{
   display:flex;align-items:center;
@@ -164,7 +154,6 @@ textarea{resize:none;min-height:clamp(72px,15vw,90px);line-height:1.6;}
 .sd-empty{padding:16px 14px;text-align:center;color:var(--muted);font-size:13px;}
 .sd-letter-group{padding:6px 14px 2px;font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(245,166,35,.45);border-top:1px solid rgba(255,255,255,.05);}
 .sd-letter-group:first-child{border-top:none;}
-/* ============================================================== */
 
 /* STATUS */
 .status-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(6px,2vw,10px);}
@@ -220,6 +209,7 @@ textarea{resize:none;min-height:clamp(72px,15vw,90px);line-height:1.6;}
 .badge-izin{background:var(--amber-bg);color:var(--amber);border:1px solid rgba(251,191,36,.3);}
 .badge-alpha{background:var(--red-bg);color:var(--red);border:1px solid rgba(248,113,113,.3);}
 .badge-pertemuan{background:rgba(245,166,35,.15);color:var(--accent);border:1px solid rgba(245,166,35,.3);}
+.badge-id{background:rgba(255,255,255,.07);color:var(--muted);border:1px solid rgba(255,255,255,.12);font-family:monospace;font-size:10px;}
 
 /* BTN ROW */
 .btn-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
@@ -258,9 +248,7 @@ textarea{resize:none;min-height:clamp(72px,15vw,90px);line-height:1.6;}
       <div class="subtitle">Home Music Course — Presensi Siswa</div>
     </div>
 
-    <!-- ======================================================= -->
-    <!-- VIEW: FORM TAMBAH                                        -->
-    <!-- ======================================================= -->
+    <!-- VIEW: FORM TAMBAH -->
     <div id="view-form" class="view active">
       <div class="form-body">
 
@@ -287,10 +275,11 @@ textarea{resize:none;min-height:clamp(72px,15vw,90px);line-height:1.6;}
               <div class="sd-list" id="sd-form-list"></div>
             </div>
             <input type="hidden" id="f-nama" />
+            <input type="hidden" id="f-id-siswa" />
           </div>
         </div>
 
-        <!-- Pertemuan Ke — otomatis setelah nama dipilih -->
+        <!-- Pertemuan Ke -->
         <div class="field">
           <label>Pertemuan Ke</label>
           <div class="pertemuan-box" id="f-pertemuan-box">
@@ -361,9 +350,7 @@ textarea{resize:none;min-height:clamp(72px,15vw,90px);line-height:1.6;}
       </div>
     </div>
 
-    <!-- ======================================================= -->
-    <!-- VIEW: SUCCESS                                            -->
-    <!-- ======================================================= -->
+    <!-- VIEW: SUCCESS -->
     <div id="view-success" class="view">
       <div class="success-view">
         <div class="success-icon">✅</div>
@@ -379,9 +366,7 @@ textarea{resize:none;min-height:clamp(72px,15vw,90px);line-height:1.6;}
       </div>
     </div>
 
-    <!-- ======================================================= -->
-    <!-- VIEW: EDIT                                               -->
-    <!-- ======================================================= -->
+    <!-- VIEW: EDIT -->
     <div id="view-edit" class="view">
       <div class="form-body">
 
@@ -502,10 +487,13 @@ const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwz8-KFRo9hWSCqjD0jR
 
 let lastSubmitted = null;
 let lastRowIndex  = null;
-let allSiswa      = [];
+
+// allSiswa sekarang array of { id, nama }
+let allSiswa = [];
 
 // =====================================================================
 // SEARCHABLE DROPDOWN CLASS
+// Mendukung items berupa string[] ATAU { id, nama }[]
 // =====================================================================
 class SearchableDropdown {
   constructor(cfg) {
@@ -515,23 +503,27 @@ class SearchableDropdown {
     this.clearBtn = document.getElementById(cfg.clearId);
     this.dropdown = document.getElementById(cfg.dropdownId);
     this.list     = document.getElementById(cfg.listId);
-    this.hidden   = document.getElementById(cfg.hiddenId);
-    this.items    = [];
-    this.selected = '';
+    this.hidden   = document.getElementById(cfg.hiddenId);        // menyimpan nama
+    this.hiddenId = cfg.hiddenIdId ? document.getElementById(cfg.hiddenIdId) : null; // menyimpan id siswa
+    this.items    = []; // array of { id, nama }
+    this.selected = ''; // nama yang dipilih
     this.focusIdx = -1;
-    this.onSelect = cfg.onSelect || null;
+    this.onSelect = cfg.onSelect || null; // callback(nama, id)
     this._bind();
   }
 
+  // items: array of { id, nama } atau string[]
   setItems(arr) {
-    this.items = [...arr].sort((a, b) => a.localeCompare(b, 'id', { sensitivity: 'base' }));
+    this.items = arr.map(i => typeof i === 'string' ? { id: '', nama: i } : i)
+      .sort((a, b) => a.nama.localeCompare(b.nama, 'id', { sensitivity: 'base' }));
     this._renderList('');
   }
 
-  setValue(val) {
-    this.selected     = val;
-    this.input.value  = val;
-    this.hidden.value = val;
+  setValue(nama, id) {
+    this.selected     = nama;
+    this.input.value  = nama;
+    this.hidden.value = nama;
+    if (this.hiddenId) this.hiddenId.value = id || '';
     this._toggleClear();
     this._renderList(this.input.value);
   }
@@ -540,13 +532,15 @@ class SearchableDropdown {
     this.selected     = '';
     this.input.value  = '';
     this.hidden.value = '';
+    if (this.hiddenId) this.hiddenId.value = '';
     this.focusIdx     = -1;
     this._toggleClear();
     this._close();
     this._renderList('');
   }
 
-  getValue() { return this.hidden.value; }
+  getValue()   { return this.hidden.value; }
+  getIdSiswa() { return this.hiddenId ? this.hiddenId.value : ''; }
 
   _bind() {
     this.row.addEventListener('click', () => { this._open(); this.input.focus(); });
@@ -554,6 +548,7 @@ class SearchableDropdown {
     this.input.addEventListener('input', () => {
       this.selected     = '';
       this.hidden.value = '';
+      if (this.hiddenId) this.hiddenId.value = '';
       this.focusIdx     = -1;
       this._toggleClear();
       this._renderList(this.input.value);
@@ -567,7 +562,7 @@ class SearchableDropdown {
       this.reset();
       this.input.focus();
       this._open();
-      if (this.onSelect) this.onSelect('');
+      if (this.onSelect) this.onSelect('', '');
     });
 
     document.addEventListener('click', e => {
@@ -596,7 +591,9 @@ class SearchableDropdown {
 
   _renderList(query) {
     const q        = query.trim().toLowerCase();
-    const filtered = q ? this.items.filter(n => n.toLowerCase().includes(q)) : this.items;
+    const filtered = q
+      ? this.items.filter(s => s.nama.toLowerCase().includes(q))
+      : this.items;
 
     if (!filtered.length) {
       this.list.innerHTML = `<div class="sd-empty">Tidak ditemukan</div>`;
@@ -605,44 +602,48 @@ class SearchableDropdown {
 
     let html = '';
     let lastLetter = '';
-    filtered.forEach(name => {
-      const letter = name[0].toUpperCase();
+    filtered.forEach(s => {
+      const letter = s.nama[0].toUpperCase();
       if (letter !== lastLetter) {
         html += `<div class="sd-letter-group">${letter}</div>`;
         lastLetter = letter;
       }
-      const initial = name.substring(0, 2).toUpperCase();
-      const isSel   = name === this.selected;
-      const display = q ? this._highlight(name, q) : name;
-      html += `<div class="sd-item${isSel ? ' selected' : ''}" data-val="${name}">
+      const initial = s.nama.substring(0, 2).toUpperCase();
+      const isSel   = s.nama === this.selected;
+      const display = q ? this._highlight(s.nama, q) : s.nama;
+      html += `<div class="sd-item${isSel ? ' selected' : ''}" data-val="${s.nama}" data-id="${s.id}">
         <span class="sd-initial">${initial}</span>${display}
       </div>`;
     });
     this.list.innerHTML = html;
 
     this.list.querySelectorAll('.sd-item').forEach(el => {
-      el.addEventListener('mousedown', e => { e.preventDefault(); this._select(el.dataset.val); });
+      el.addEventListener('mousedown', e => {
+        e.preventDefault();
+        this._select(el.dataset.val, el.dataset.id);
+      });
     });
 
     const sel = this.list.querySelector('.sd-item.selected');
     if (sel) sel.scrollIntoView({ block: 'nearest' });
   }
 
-  _highlight(name, q) {
-    const idx = name.toLowerCase().indexOf(q);
-    if (idx === -1) return name;
-    return name.substring(0, idx) +
-      `<mark style="background:rgba(245,166,35,.3);color:var(--accent);border-radius:2px;">${name.substring(idx, idx + q.length)}</mark>` +
-      name.substring(idx + q.length);
+  _highlight(nama, q) {
+    const idx = nama.toLowerCase().indexOf(q);
+    if (idx === -1) return nama;
+    return nama.substring(0, idx) +
+      `<mark style="background:rgba(245,166,35,.3);color:var(--accent);border-radius:2px;">${nama.substring(idx, idx + q.length)}</mark>` +
+      nama.substring(idx + q.length);
   }
 
-  _select(val) {
-    this.selected     = val;
-    this.hidden.value = val;
-    this.input.value  = val;
+  _select(nama, id) {
+    this.selected     = nama;
+    this.hidden.value = nama;
+    if (this.hiddenId) this.hiddenId.value = id || '';
+    this.input.value  = nama;
     this._toggleClear();
     this._close();
-    if (this.onSelect) this.onSelect(val);
+    if (this.onSelect) this.onSelect(nama, id);
   }
 
   _onKey(e) {
@@ -658,7 +659,10 @@ class SearchableDropdown {
       this._applyFocus(items);
     } else if (e.key === 'Enter') {
       e.preventDefault();
-      if (this.focusIdx >= 0 && items[this.focusIdx]) this._select(items[this.focusIdx].dataset.val);
+      if (this.focusIdx >= 0 && items[this.focusIdx]) {
+        const el = items[this.focusIdx];
+        this._select(el.dataset.val, el.dataset.id);
+      }
     } else if (e.key === 'Escape') {
       this._close();
     }
@@ -673,7 +677,7 @@ class SearchableDropdown {
 }
 
 // =====================================================================
-// FETCH PERTEMUAN KE — dipanggil otomatis saat nama dipilih di form baru
+// FETCH PERTEMUAN KE
 // =====================================================================
 async function fetchPertemuan(nama, boxId, textId, spinId, hiddenId) {
   const box    = document.getElementById(boxId);
@@ -681,7 +685,6 @@ async function fetchPertemuan(nama, boxId, textId, spinId, hiddenId) {
   const spin   = spinId ? document.getElementById(spinId) : null;
   const hidden = document.getElementById(hiddenId);
 
-  // Nama dikosongkan — reset tampilan
   if (!nama) {
     box.classList.remove('loaded');
     text.classList.remove('loaded');
@@ -690,7 +693,6 @@ async function fetchPertemuan(nama, boxId, textId, spinId, hiddenId) {
     return;
   }
 
-  // Loading state
   text.classList.remove('loaded');
   box.classList.remove('loaded');
   text.textContent = 'Mengambil data...';
@@ -710,7 +712,7 @@ async function fetchPertemuan(nama, boxId, textId, spinId, hiddenId) {
     } else {
       text.textContent = '⚠️ Gagal mengambil data';
     }
-  } catch (e) {
+  } catch (err) {
     text.textContent = '⚠️ Gagal menghubungi server';
   }
 
@@ -721,15 +723,15 @@ async function fetchPertemuan(nama, boxId, textId, spinId, hiddenId) {
 // INISIALISASI DROPDOWN
 // =====================================================================
 const sdForm = new SearchableDropdown({
-  wrapId    : 'sd-form',
-  rowId     : 'sd-form-row',
-  inputId   : 'sd-form-input',
-  clearId   : 'sd-form-clear',
-  dropdownId: 'sd-form-dropdown',
-  listId    : 'sd-form-list',
-  hiddenId  : 'f-nama',
-  // Saat nama dipilih → fetch pertemuan ke otomatis
-  onSelect  : (nama) => fetchPertemuan(
+  wrapId     : 'sd-form',
+  rowId      : 'sd-form-row',
+  inputId    : 'sd-form-input',
+  clearId    : 'sd-form-clear',
+  dropdownId : 'sd-form-dropdown',
+  listId     : 'sd-form-list',
+  hiddenId   : 'f-nama',
+  hiddenIdId : 'f-id-siswa',   // <-- simpan ID Siswa
+  onSelect   : (nama, id) => fetchPertemuan(
     nama,
     'f-pertemuan-box',
     'f-pertemuan-text',
@@ -739,14 +741,14 @@ const sdForm = new SearchableDropdown({
 });
 
 const sdEdit = new SearchableDropdown({
-  wrapId    : 'sd-edit',
-  rowId     : 'sd-edit-row',
-  inputId   : 'sd-edit-input',
-  clearId   : 'sd-edit-clear',
-  dropdownId: 'sd-edit-dropdown',
-  listId    : 'sd-edit-list',
-  hiddenId  : 'e-nama'
-  // Edit: pertemuan ke diisi dari lastSubmitted, tidak refetch
+  wrapId     : 'sd-edit',
+  rowId      : 'sd-edit-row',
+  inputId    : 'sd-edit-input',
+  clearId    : 'sd-edit-clear',
+  dropdownId : 'sd-edit-dropdown',
+  listId     : 'sd-edit-list',
+  hiddenId   : 'e-nama'
+  // Edit: ID Siswa tidak berubah, diambil dari lastSubmitted
 });
 
 // =====================================================================
@@ -760,7 +762,10 @@ async function loadSiswa() {
   try {
     const res  = await fetch(SCRIPT_URL + '?action=getSiswa');
     const json = await res.json();
-    allSiswa   = (json.siswa || []).sort((a, b) => a.localeCompare(b, 'id', { sensitivity: 'base' }));
+    // json.siswa = [{ id, nama }, ...]
+    allSiswa = (json.siswa || []).sort((a, b) =>
+      a.nama.localeCompare(b.nama, 'id', { sensitivity: 'base' })
+    );
     sdForm.setItems(allSiswa);
     sdEdit.setItems(allSiswa);
   } catch (e) {
@@ -778,7 +783,6 @@ function showView(id) {
 }
 
 function goNew() {
-  // Reset form
   sdForm.reset();
   document.querySelectorAll('input[name="status"]').forEach(r => r.checked = false);
   document.getElementById('f-keterangan').value = '';
@@ -789,7 +793,6 @@ function goNew() {
   document.getElementById('f-tanggal').valueAsDate = new Date();
   document.getElementById('alertBox').style.display = 'none';
 
-  // Reset pertemuan display
   const box  = document.getElementById('f-pertemuan-box');
   const text = document.getElementById('f-pertemuan-text');
   box.classList.remove('loaded');
@@ -814,9 +817,8 @@ function goEdit() {
   const r = document.querySelector(`input[name="status-edit"][value="${d.status}"]`);
   if (r) r.checked = true;
 
-  // Isi pertemuan ke dari data yang sudah tersimpan (tidak berubah saat edit)
   const ke = d.pertemuanKe || '—';
-  document.getElementById('e-pertemuan').value = ke;
+  document.getElementById('e-pertemuan').value       = ke;
   document.getElementById('e-pertemuan-text').textContent = 'Pertemuan ke-' + ke;
 
   ['e-foto', 'e-video'].forEach(id => {
@@ -874,6 +876,7 @@ function statusBadge(s) {
 
 function buildSummary(d) {
   const rows = [
+    ['ID Siswa',     d.idSiswa ? `<span class="badge badge-id">${d.idSiswa}</span>` : '—'],
     ['Tanggal',      d.tanggal],
     ['Nama',         d.nama],
     ['Pertemuan Ke', `<span class="badge badge-pertemuan">Ke-${d.pertemuanKe || '—'}</span>`],
@@ -893,6 +896,7 @@ function buildSummary(d) {
 async function submitForm() {
   const tanggal    = document.getElementById('f-tanggal').value;
   const nama       = sdForm.getValue();
+  const idSiswa    = sdForm.getIdSiswa();          // <-- ambil ID Siswa
   const statusEl   = document.querySelector('input[name="status"]:checked');
   const keterangan = document.getElementById('f-keterangan').value.trim();
   const pertemuan  = document.getElementById('f-pertemuan').value;
@@ -910,6 +914,7 @@ async function submitForm() {
   const payload = {
     tanggal,
     nama,
+    idSiswa,
     status      : statusEl.value,
     keterangan,
     pertemuanKe : pertemuan || 1
@@ -926,6 +931,7 @@ async function submitForm() {
       lastSubmitted = {
         ...payload,
         pertemuanKe : json.pertemuanKe || pertemuan || 1,
+        idSiswa     : json.idSiswa     || idSiswa   || '',
         fotoUrl     : json.fotoUrl  || '',
         videoUrl    : json.videoUrl || ''
       };
@@ -978,6 +984,7 @@ async function updateForm() {
     status      : statusEl.value,
     keterangan,
     pertemuanKe : pertemuan
+    // idSiswa & pertemuanKe tidak diubah — diambil dari sheet di server
   };
 
   try {
@@ -991,6 +998,7 @@ async function updateForm() {
       lastSubmitted = {
         ...payload,
         pertemuanKe : json.pertemuanKe || pertemuan,
+        idSiswa     : json.idSiswa     || lastSubmitted.idSiswa || '',
         fotoUrl     : json.fotoUrl  || lastSubmitted.fotoUrl  || '',
         videoUrl    : json.videoUrl || lastSubmitted.videoUrl || ''
       };
