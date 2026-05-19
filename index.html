@@ -81,23 +81,36 @@ input:focus,select:focus,textarea:focus{border-color:var(--accent);box-shadow:0 
 input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(1);opacity:.6;cursor:pointer;}
 textarea{resize:none;min-height:clamp(72px,15vw,90px);line-height:1.6;}
 
-/* PERTEMUAN KE DISPLAY */
-.pertemuan-box{
+/* PERTEMUAN KE INPUT */
+.pertemuan-input-wrap{
   display:flex;align-items:center;gap:10px;
   padding:clamp(11px,2.5vw,13px) clamp(12px,3vw,15px);
   border-radius:var(--radius-sm);
   border:1px solid var(--input-border);
-  background:rgba(255,255,255,0.04);
+  background:var(--input-bg);
   min-height:46px;
-  transition:border-color var(--tr),background var(--tr);
+  cursor:text;
+  transition:border-color var(--tr),box-shadow var(--tr),background var(--tr);
 }
-.pertemuan-box.loaded{
+.pertemuan-input-wrap:focus-within{
+  border-color:var(--accent);
+  box-shadow:0 0 0 3px var(--input-focus);
+}
+.pertemuan-input-wrap.loaded{
   border-color:rgba(245,166,35,.4);
   background:rgba(245,166,35,.06);
 }
-.pertemuan-badge{font-size:18px;flex-shrink:0;line-height:1;}
-.pertemuan-text{font-size:clamp(13px,3vw,14px);color:var(--muted);flex:1;}
-.pertemuan-text.loaded{color:var(--accent);font-weight:600;}
+.pertemuan-input-wrap.loaded:focus-within{
+  border-color:var(--accent);
+  box-shadow:0 0 0 3px var(--input-focus);
+}
+.pertemuan-input-wrap input[type="number"]::-webkit-inner-spin-button,
+.pertemuan-input-wrap input[type="number"]::-webkit-outer-spin-button{
+  -webkit-appearance:none;margin:0;
+}
+.pertemuan-input-wrap input[type="number"]{-moz-appearance:textfield;}
+.pertemuan-input-wrap input:disabled{opacity:.45;cursor:not-allowed;}
+.pertemuan-badge-inline{font-size:18px;flex-shrink:0;line-height:1;}
 .pertemuan-spin{
   width:14px;height:14px;
   border:2px solid rgba(245,166,35,.3);
@@ -282,12 +295,15 @@ textarea{resize:none;min-height:clamp(72px,15vw,90px);line-height:1.6;}
         <!-- Pertemuan Ke -->
         <div class="field">
           <label>Pertemuan Ke</label>
-          <div class="pertemuan-box" id="f-pertemuan-box">
-            <span class="pertemuan-badge">📅</span>
-            <span class="pertemuan-text" id="f-pertemuan-text">Pilih nama siswa dahulu...</span>
+          <div class="pertemuan-input-wrap" id="f-pertemuan-box">
+            <span class="pertemuan-badge-inline">📅</span>
+            <input type="number" id="f-pertemuan" min="1" placeholder="Pilih nama siswa dahulu..." disabled
+              style="flex:1;border:none;background:transparent;color:var(--text);font-size:clamp(13px,3vw,14px);font-family:inherit;outline:none;padding:0;min-width:0;-webkit-appearance:none;appearance:none;" />
             <div class="pertemuan-spin" id="f-pertemuan-spin"></div>
           </div>
-          <input type="hidden" id="f-pertemuan" />
+          <div style="font-size:11px;color:var(--muted);margin-top:5px;padding-left:2px;">
+            ✏️ Auto-hitung, tapi bisa diubah manual jika perlu
+          </div>
         </div>
 
         <!-- Status -->
@@ -398,16 +414,16 @@ textarea{resize:none;min-height:clamp(72px,15vw,90px);line-height:1.6;}
           </div>
         </div>
 
-        <!-- Pertemuan Ke edit — readonly -->
+        <!-- Pertemuan Ke edit — bisa diedit -->
         <div class="field">
           <label>Pertemuan Ke</label>
-          <div class="pertemuan-box loaded" id="e-pertemuan-box">
-            <span class="pertemuan-badge">📅</span>
-            <span class="pertemuan-text loaded" id="e-pertemuan-text">—</span>
+          <div class="pertemuan-input-wrap loaded" id="e-pertemuan-box">
+            <span class="pertemuan-badge-inline">📅</span>
+            <input type="number" id="e-pertemuan" min="1" placeholder="—"
+              style="flex:1;border:none;background:transparent;color:var(--accent);font-size:clamp(13px,3vw,14px);font-family:inherit;font-weight:600;outline:none;padding:0;min-width:0;-webkit-appearance:none;appearance:none;" />
           </div>
-          <input type="hidden" id="e-pertemuan" />
           <div style="font-size:11px;color:var(--muted);margin-top:5px;padding-left:2px;">
-            ℹ️ Pertemuan ke tidak berubah saat edit
+            ✏️ Bisa diubah manual jika perlu
           </div>
         </div>
 
@@ -679,41 +695,45 @@ class SearchableDropdown {
 // =====================================================================
 // FETCH PERTEMUAN KE
 // =====================================================================
-async function fetchPertemuan(nama, boxId, textId, spinId, hiddenId) {
-  const box    = document.getElementById(boxId);
-  const text   = document.getElementById(textId);
-  const spin   = spinId ? document.getElementById(spinId) : null;
-  const hidden = document.getElementById(hiddenId);
+async function fetchPertemuan(nama, boxId, inputId, spinId) {
+  const box   = document.getElementById(boxId);
+  const input = document.getElementById(inputId);
+  const spin  = spinId ? document.getElementById(spinId) : null;
 
   if (!nama) {
     box.classList.remove('loaded');
-    text.classList.remove('loaded');
-    text.textContent = 'Pilih nama siswa dahulu...';
-    hidden.value = '';
+    input.value       = '';
+    input.disabled    = true;
+    input.placeholder = 'Pilih nama siswa dahulu...';
+    input.style.color = 'var(--muted)';
     return;
   }
 
-  text.classList.remove('loaded');
+  // Loading state
   box.classList.remove('loaded');
-  text.textContent = 'Mengambil data...';
+  input.disabled    = true;
+  input.value       = '';
+  input.placeholder = 'Mengambil data...';
   if (spin) spin.style.display = 'block';
-  hidden.value = '';
 
   try {
     const res  = await fetch(SCRIPT_URL + '?action=getPertemuan&nama=' + encodeURIComponent(nama));
     const json = await res.json();
 
     if (json.status === 'ok') {
-      const ke     = json.pertemuanKe;
-      hidden.value = ke;
-      text.textContent = 'Pertemuan ke-' + ke;
-      text.classList.add('loaded');
+      const ke      = json.pertemuanKe;
+      input.value   = ke;
+      input.disabled = false;
+      input.placeholder = '';
+      input.style.color = 'var(--accent)';
       box.classList.add('loaded');
     } else {
-      text.textContent = '⚠️ Gagal mengambil data';
+      input.placeholder = '⚠️ Gagal mengambil data';
+      input.disabled = false;
     }
   } catch (err) {
-    text.textContent = '⚠️ Gagal menghubungi server';
+    input.placeholder = '⚠️ Gagal menghubungi server';
+    input.disabled = false;
   }
 
   if (spin) spin.style.display = 'none';
@@ -734,9 +754,8 @@ const sdForm = new SearchableDropdown({
   onSelect   : (nama, id) => fetchPertemuan(
     nama,
     'f-pertemuan-box',
-    'f-pertemuan-text',
-    'f-pertemuan-spin',
-    'f-pertemuan'
+    'f-pertemuan',
+    'f-pertemuan-spin'
   )
 });
 
@@ -793,12 +812,13 @@ function goNew() {
   document.getElementById('f-tanggal').valueAsDate = new Date();
   document.getElementById('alertBox').style.display = 'none';
 
-  const box  = document.getElementById('f-pertemuan-box');
-  const text = document.getElementById('f-pertemuan-text');
+  const box   = document.getElementById('f-pertemuan-box');
+  const finput = document.getElementById('f-pertemuan');
   box.classList.remove('loaded');
-  text.classList.remove('loaded');
-  text.textContent = 'Pilih nama siswa dahulu...';
-  document.getElementById('f-pertemuan').value = '';
+  finput.value       = '';
+  finput.disabled    = true;
+  finput.placeholder = 'Pilih nama siswa dahulu...';
+  finput.style.color = 'var(--muted)';
 
   showView('form');
 }
@@ -817,9 +837,8 @@ function goEdit() {
   const r = document.querySelector(`input[name="status-edit"][value="${d.status}"]`);
   if (r) r.checked = true;
 
-  const ke = d.pertemuanKe || '—';
-  document.getElementById('e-pertemuan').value       = ke;
-  document.getElementById('e-pertemuan-text').textContent = 'Pertemuan ke-' + ke;
+  const ke = d.pertemuanKe || 1;
+  document.getElementById('e-pertemuan').value = ke;
 
   ['e-foto', 'e-video'].forEach(id => {
     document.getElementById(id).value = '';
@@ -899,7 +918,7 @@ async function submitForm() {
   const idSiswa    = sdForm.getIdSiswa();          // <-- ambil ID Siswa
   const statusEl   = document.querySelector('input[name="status"]:checked');
   const keterangan = document.getElementById('f-keterangan').value.trim();
-  const pertemuan  = document.getElementById('f-pertemuan').value;
+  const pertemuan  = parseInt(document.getElementById('f-pertemuan').value) || 1;
   const fotoFile   = document.getElementById('f-foto').files[0];
   const videoFile  = document.getElementById('f-video').files[0];
 
@@ -964,7 +983,7 @@ async function updateForm() {
   const nama       = sdEdit.getValue();
   const statusEl   = document.querySelector('input[name="status-edit"]:checked');
   const keterangan = document.getElementById('e-keterangan').value.trim();
-  const pertemuan  = document.getElementById('e-pertemuan').value;
+  const pertemuan  = parseInt(document.getElementById('e-pertemuan').value) || 1;
   const fotoFile   = document.getElementById('e-foto').files[0];
   const videoFile  = document.getElementById('e-video').files[0];
 
