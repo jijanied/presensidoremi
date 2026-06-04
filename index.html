@@ -25,6 +25,10 @@
   --red-bg: rgba(248,113,113,0.12);
   --amber: #fbbf24;
   --amber-bg: rgba(251,191,36,0.12);
+  --blue: #60a5fa;
+  --blue-bg: rgba(96,165,250,0.12);
+  --purple: #a78bfa;
+  --purple-bg: rgba(167,139,250,0.12);
   --radius: 16px;
   --radius-sm: 10px;
   --tr: 0.2s cubic-bezier(0.4,0,0.2,1);
@@ -118,6 +122,51 @@ textarea{resize:none;min-height:clamp(72px,15vw,90px);line-height:1.6;}
   border-radius:50%;
   animation:spin .7s linear infinite;
   display:none;flex-shrink:0;margin-left:auto;
+}
+
+/* GURU STATUS BADGE */
+.guru-status-wrap{
+  display:flex;align-items:center;gap:10px;
+  padding:clamp(10px,2.5vw,12px) clamp(12px,3vw,15px);
+  border-radius:var(--radius-sm);
+  border:1px solid var(--input-border);
+  background:var(--input-bg);
+  min-height:44px;
+  transition:border-color var(--tr),background var(--tr);
+}
+.guru-status-wrap.is-tetap{
+  border-color:rgba(96,165,250,.35);
+  background:rgba(96,165,250,.07);
+}
+.guru-status-wrap.is-pengganti{
+  border-color:rgba(167,139,250,.35);
+  background:rgba(167,139,250,.07);
+}
+.guru-status-badge{
+  display:inline-flex;align-items:center;gap:5px;
+  padding:3px 10px;border-radius:20px;
+  font-size:12px;font-weight:600;letter-spacing:.3px;
+  transition:all var(--tr);
+}
+.guru-status-badge.tetap{
+  background:var(--blue-bg);color:var(--blue);
+  border:1px solid rgba(96,165,250,.3);
+}
+.guru-status-badge.pengganti{
+  background:var(--purple-bg);color:var(--purple);
+  border:1px solid rgba(167,139,250,.3);
+}
+.guru-status-badge.empty{
+  background:var(--input-bg);color:var(--muted);
+  border:1px solid var(--input-border);
+}
+.guru-spin{
+  width:14px;height:14px;
+  border:2px solid rgba(245,166,35,.3);
+  border-top-color:var(--accent);
+  border-radius:50%;
+  animation:spin .7s linear infinite;
+  display:none;flex-shrink:0;
 }
 
 /* SEARCHABLE DROPDOWN */
@@ -223,6 +272,8 @@ textarea{resize:none;min-height:clamp(72px,15vw,90px);line-height:1.6;}
 .badge-alpha{background:var(--red-bg);color:var(--red);border:1px solid rgba(248,113,113,.3);}
 .badge-pertemuan{background:rgba(245,166,35,.15);color:var(--accent);border:1px solid rgba(245,166,35,.3);}
 .badge-id{background:rgba(255,255,255,.07);color:var(--muted);border:1px solid rgba(255,255,255,.12);font-family:monospace;font-size:10px;}
+.badge-guru-tetap{background:var(--blue-bg);color:var(--blue);border:1px solid rgba(96,165,250,.3);}
+.badge-guru-pengganti{background:var(--purple-bg);color:var(--purple);border:1px solid rgba(167,139,250,.3);}
 
 /* BTN ROW */
 .btn-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
@@ -303,6 +354,34 @@ textarea{resize:none;min-height:clamp(72px,15vw,90px);line-height:1.6;}
           </div>
           <div style="font-size:11px;color:var(--muted);margin-top:5px;padding-left:2px;">
             ✏️ Auto-hitung, tapi bisa diubah manual jika perlu
+          </div>
+        </div>
+
+        <!-- Nama Guru -->
+        <div class="field">
+          <label>Guru yang Mengajar <span class="req">*</span></label>
+          <div class="searchable-wrap" id="sd-guru-form">
+            <div class="searchable-input-row" id="sd-guru-form-row">
+              <input type="text" id="sd-guru-form-input" placeholder="Pilih nama siswa dahulu..." autocomplete="off" disabled
+                style="cursor:not-allowed;opacity:.5;" />
+              <span class="sd-clear" id="sd-guru-form-clear" title="Reset ke guru tetap">✕</span>
+              <span class="sd-chevron">▼</span>
+            </div>
+            <div class="sd-dropdown" id="sd-guru-form-dropdown">
+              <div class="sd-list" id="sd-guru-form-list"></div>
+            </div>
+            <input type="hidden" id="f-nama-guru" />
+          </div>
+          <!-- Status Guru badge -->
+          <div style="margin-top:8px;">
+            <div class="guru-status-wrap" id="f-guru-status-wrap">
+              <div class="guru-spin" id="f-guru-spin"></div>
+              <span class="guru-status-badge empty" id="f-guru-status-badge">— Pilih siswa dahulu</span>
+              <span style="font-size:11px;color:var(--muted);margin-left:auto;" id="f-guru-tetap-info"></span>
+            </div>
+          </div>
+          <div style="font-size:11px;color:var(--muted);margin-top:5px;padding-left:2px;">
+            🔄 Auto-isi guru tetap siswa. Ganti jika ada guru pengganti.
           </div>
         </div>
 
@@ -414,7 +493,7 @@ textarea{resize:none;min-height:clamp(72px,15vw,90px);line-height:1.6;}
           </div>
         </div>
 
-        <!-- Pertemuan Ke edit — bisa diedit -->
+        <!-- Pertemuan Ke edit -->
         <div class="field">
           <label>Pertemuan Ke</label>
           <div class="pertemuan-input-wrap loaded" id="e-pertemuan-box">
@@ -424,6 +503,29 @@ textarea{resize:none;min-height:clamp(72px,15vw,90px);line-height:1.6;}
           </div>
           <div style="font-size:11px;color:var(--muted);margin-top:5px;padding-left:2px;">
             ✏️ Bisa diubah manual jika perlu
+          </div>
+        </div>
+
+        <!-- Nama Guru edit -->
+        <div class="field">
+          <label>Guru yang Mengajar <span class="req">*</span></label>
+          <div class="searchable-wrap" id="sd-guru-edit">
+            <div class="searchable-input-row" id="sd-guru-edit-row">
+              <input type="text" id="sd-guru-edit-input" placeholder="Pilih guru..." autocomplete="off" />
+              <span class="sd-clear" id="sd-guru-edit-clear" title="Hapus pilihan">✕</span>
+              <span class="sd-chevron">▼</span>
+            </div>
+            <div class="sd-dropdown" id="sd-guru-edit-dropdown">
+              <div class="sd-list" id="sd-guru-edit-list"></div>
+            </div>
+            <input type="hidden" id="e-nama-guru" />
+          </div>
+          <!-- Status Guru badge edit -->
+          <div style="margin-top:8px;">
+            <div class="guru-status-wrap" id="e-guru-status-wrap">
+              <span class="guru-status-badge empty" id="e-guru-status-badge">—</span>
+              <span style="font-size:11px;color:var(--muted);margin-left:auto;" id="e-guru-tetap-info"></span>
+            </div>
           </div>
         </div>
 
@@ -501,15 +603,17 @@ textarea{resize:none;min-height:clamp(72px,15vw,90px);line-height:1.6;}
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzYopFmCAm8A7KyAGXNXgs1N78c-_hoPuC067Fn1KsupwRd72CfASLifGeHk1M-s_2z/exec';
 // ============================================================
 
-let lastSubmitted = null;
-let lastRowIndex  = null;
+let lastSubmitted  = null;
+let lastRowIndex   = null;
+let allSiswa       = [];
+let allGuru        = [];
 
-// allSiswa sekarang array of { id, nama }
-let allSiswa = [];
+// Menyimpan nama guru tetap per siswa yang sudah di-fetch
+// key: nama siswa, value: nama guru tetap
+const guruTetapCache = {};
 
 // =====================================================================
 // SEARCHABLE DROPDOWN CLASS
-// Mendukung items berupa string[] ATAU { id, nama }[]
 // =====================================================================
 class SearchableDropdown {
   constructor(cfg) {
@@ -519,16 +623,15 @@ class SearchableDropdown {
     this.clearBtn = document.getElementById(cfg.clearId);
     this.dropdown = document.getElementById(cfg.dropdownId);
     this.list     = document.getElementById(cfg.listId);
-    this.hidden   = document.getElementById(cfg.hiddenId);        // menyimpan nama
-    this.hiddenId = cfg.hiddenIdId ? document.getElementById(cfg.hiddenIdId) : null; // menyimpan id siswa
-    this.items    = []; // array of { id, nama }
-    this.selected = ''; // nama yang dipilih
+    this.hidden   = document.getElementById(cfg.hiddenId);
+    this.hiddenId = cfg.hiddenIdId ? document.getElementById(cfg.hiddenIdId) : null;
+    this.items    = [];
+    this.selected = '';
     this.focusIdx = -1;
-    this.onSelect = cfg.onSelect || null; // callback(nama, id)
+    this.onSelect = cfg.onSelect || null;
     this._bind();
   }
 
-  // items: array of { id, nama } atau string[]
   setItems(arr) {
     this.items = arr.map(i => typeof i === 'string' ? { id: '', nama: i } : i)
       .sort((a, b) => a.nama.localeCompare(b.nama, 'id', { sensitivity: 'base' }));
@@ -558,8 +661,17 @@ class SearchableDropdown {
   getValue()   { return this.hidden.value; }
   getIdSiswa() { return this.hiddenId ? this.hiddenId.value : ''; }
 
+  setDisabled(disabled) {
+    this.input.disabled = disabled;
+    this.input.style.cursor  = disabled ? 'not-allowed' : '';
+    this.input.style.opacity = disabled ? '0.5' : '1';
+    if (disabled) this._close();
+  }
+
   _bind() {
-    this.row.addEventListener('click', () => { this._open(); this.input.focus(); });
+    this.row.addEventListener('click', () => {
+      if (!this.input.disabled) { this._open(); this.input.focus(); }
+    });
 
     this.input.addEventListener('input', () => {
       this.selected     = '';
@@ -587,6 +699,7 @@ class SearchableDropdown {
   }
 
   _open() {
+    if (this.input.disabled) return;
     this.row.classList.add('open');
     this.dropdown.classList.add('open');
     this._renderList(this.input.value);
@@ -627,7 +740,7 @@ class SearchableDropdown {
       const initial = s.nama.substring(0, 2).toUpperCase();
       const isSel   = s.nama === this.selected;
       const display = q ? this._highlight(s.nama, q) : s.nama;
-      html += `<div class="sd-item${isSel ? ' selected' : ''}" data-val="${s.nama}" data-id="${s.id}">
+      html += `<div class="sd-item${isSel ? ' selected' : ''}" data-val="${s.nama}" data-id="${s.id || ''}">
         <span class="sd-initial">${initial}</span>${display}
       </div>`;
     });
@@ -693,6 +806,40 @@ class SearchableDropdown {
 }
 
 // =====================================================================
+// UPDATE STATUS GURU BADGE
+// prefix: 'f' atau 'e'
+// namaGuru: nama guru yang dipilih sekarang
+// guruTetap: nama guru tetap siswa
+// =====================================================================
+function updateGuruStatusBadge(prefix, namaGuru, guruTetap) {
+  const wrap  = document.getElementById(prefix + '-guru-status-wrap');
+  const badge = document.getElementById(prefix + '-guru-status-badge');
+  const info  = document.getElementById(prefix + '-guru-tetap-info');
+
+  if (!namaGuru) {
+    wrap.className  = 'guru-status-wrap';
+    badge.className = 'guru-status-badge empty';
+    badge.textContent = '— Belum dipilih';
+    if (info) info.textContent = '';
+    return;
+  }
+
+  const isPengganti = guruTetap && namaGuru !== guruTetap;
+
+  if (isPengganti) {
+    wrap.className    = 'guru-status-wrap is-pengganti';
+    badge.className   = 'guru-status-badge pengganti';
+    badge.textContent = '🔄 Guru Pengganti';
+    if (info) info.textContent = 'Guru tetap: ' + guruTetap;
+  } else {
+    wrap.className    = 'guru-status-wrap is-tetap';
+    badge.className   = 'guru-status-badge tetap';
+    badge.textContent = '✓ Guru Tetap';
+    if (info) info.textContent = '';
+  }
+}
+
+// =====================================================================
 // FETCH PERTEMUAN KE
 // =====================================================================
 async function fetchPertemuan(nama, boxId, inputId, spinId) {
@@ -709,7 +856,6 @@ async function fetchPertemuan(nama, boxId, inputId, spinId) {
     return;
   }
 
-  // Loading state
   box.classList.remove('loaded');
   input.disabled    = true;
   input.value       = '';
@@ -721,22 +867,83 @@ async function fetchPertemuan(nama, boxId, inputId, spinId) {
     const json = await res.json();
 
     if (json.status === 'ok') {
-      const ke      = json.pertemuanKe;
-      input.value   = ke;
-      input.disabled = false;
+      input.value       = json.pertemuanKe;
+      input.disabled    = false;
       input.placeholder = '';
       input.style.color = 'var(--accent)';
       box.classList.add('loaded');
     } else {
       input.placeholder = '⚠️ Gagal mengambil data';
-      input.disabled = false;
+      input.disabled    = false;
     }
   } catch (err) {
     input.placeholder = '⚠️ Gagal menghubungi server';
-    input.disabled = false;
+    input.disabled    = false;
   }
 
   if (spin) spin.style.display = 'none';
+}
+
+// =====================================================================
+// FETCH GURU TETAP SISWA
+// Dipanggil saat siswa dipilih. Mengisi dropdown guru dengan auto-fill
+// guru tetap, dan mengaktifkan dropdown guru.
+// =====================================================================
+async function fetchGuruTetap(namaSiswa, prefix) {
+  const sdGuru    = prefix === 'f' ? sdGuruForm : sdGuruEdit;
+  const spinEl    = document.getElementById(prefix + '-guru-spin');
+  const badge     = document.getElementById(prefix + '-guru-status-badge');
+  const wrap      = document.getElementById(prefix + '-guru-status-wrap');
+
+  if (!namaSiswa) {
+    sdGuru.reset();
+    sdGuru.setDisabled(true);
+    sdGuru.input.placeholder = 'Pilih nama siswa dahulu...';
+    wrap.className  = 'guru-status-wrap';
+    badge.className = 'guru-status-badge empty';
+    badge.textContent = '— Pilih siswa dahulu';
+    const info = document.getElementById(prefix + '-guru-tetap-info');
+    if (info) info.textContent = '';
+    return;
+  }
+
+  // Aktifkan dropdown guru, tampilkan loading
+  sdGuru.reset();
+  sdGuru.setDisabled(false);
+  sdGuru.input.placeholder = 'Mengambil guru tetap...';
+  if (spinEl) spinEl.style.display = 'block';
+  badge.className   = 'guru-status-badge empty';
+  badge.textContent = 'Memuat...';
+
+  // Cek cache dulu
+  if (guruTetapCache[namaSiswa]) {
+    const guruTetap = guruTetapCache[namaSiswa];
+    if (spinEl) spinEl.style.display = 'none';
+    sdGuru.input.placeholder = 'Pilih guru...';
+    sdGuru.setValue(guruTetap);
+    updateGuruStatusBadge(prefix, guruTetap, guruTetap);
+    return;
+  }
+
+  try {
+    const res  = await fetch(SCRIPT_URL + '?action=getGuruSiswa&nama=' + encodeURIComponent(namaSiswa));
+    const json = await res.json();
+
+    if (json.status === 'ok' && json.guruTetap) {
+      guruTetapCache[namaSiswa] = json.guruTetap;
+      sdGuru.input.placeholder  = 'Pilih guru...';
+      sdGuru.setValue(json.guruTetap);
+      updateGuruStatusBadge(prefix, json.guruTetap, json.guruTetap);
+    } else {
+      sdGuru.input.placeholder = 'Pilih guru...';
+      updateGuruStatusBadge(prefix, '', '');
+    }
+  } catch (err) {
+    sdGuru.input.placeholder = 'Pilih guru...';
+    updateGuruStatusBadge(prefix, '', '');
+  }
+
+  if (spinEl) spinEl.style.display = 'none';
 }
 
 // =====================================================================
@@ -750,13 +957,11 @@ const sdForm = new SearchableDropdown({
   dropdownId : 'sd-form-dropdown',
   listId     : 'sd-form-list',
   hiddenId   : 'f-nama',
-  hiddenIdId : 'f-id-siswa',   // <-- simpan ID Siswa
-  onSelect   : (nama, id) => fetchPertemuan(
-    nama,
-    'f-pertemuan-box',
-    'f-pertemuan',
-    'f-pertemuan-spin'
-  )
+  hiddenIdId : 'f-id-siswa',
+  onSelect   : (nama, id) => {
+    fetchPertemuan(nama, 'f-pertemuan-box', 'f-pertemuan', 'f-pertemuan-spin');
+    fetchGuruTetap(nama, 'f');
+  }
 });
 
 const sdEdit = new SearchableDropdown({
@@ -766,9 +971,46 @@ const sdEdit = new SearchableDropdown({
   clearId    : 'sd-edit-clear',
   dropdownId : 'sd-edit-dropdown',
   listId     : 'sd-edit-list',
-  hiddenId   : 'e-nama'
-  // Edit: ID Siswa tidak berubah, diambil dari lastSubmitted
+  hiddenId   : 'e-nama',
+  onSelect   : (nama) => {
+    fetchGuruTetap(nama, 'e');
+  }
 });
+
+// Dropdown guru — form
+const sdGuruForm = new SearchableDropdown({
+  wrapId     : 'sd-guru-form',
+  rowId      : 'sd-guru-form-row',
+  inputId    : 'sd-guru-form-input',
+  clearId    : 'sd-guru-form-clear',
+  dropdownId : 'sd-guru-form-dropdown',
+  listId     : 'sd-guru-form-list',
+  hiddenId   : 'f-nama-guru',
+  onSelect   : (namaGuru) => {
+    const namaSiswa = sdForm.getValue();
+    const guruTetap = guruTetapCache[namaSiswa] || '';
+    updateGuruStatusBadge('f', namaGuru, guruTetap);
+  }
+});
+
+// Dropdown guru — edit
+const sdGuruEdit = new SearchableDropdown({
+  wrapId     : 'sd-guru-edit',
+  rowId      : 'sd-guru-edit-row',
+  inputId    : 'sd-guru-edit-input',
+  clearId    : 'sd-guru-edit-clear',
+  dropdownId : 'sd-guru-edit-dropdown',
+  listId     : 'sd-guru-edit-list',
+  hiddenId   : 'e-nama-guru',
+  onSelect   : (namaGuru) => {
+    const namaSiswa = sdEdit.getValue();
+    const guruTetap = guruTetapCache[namaSiswa] || '';
+    updateGuruStatusBadge('e', namaGuru, guruTetap);
+  }
+});
+
+// Disable guru dropdown saat pertama load (belum pilih siswa)
+sdGuruForm.setDisabled(true);
 
 // =====================================================================
 // INIT
@@ -776,12 +1018,12 @@ const sdEdit = new SearchableDropdown({
 document.getElementById('f-tanggal').valueAsDate = new Date();
 document.getElementById('e-tanggal').valueAsDate = new Date();
 loadSiswa();
+loadGuru();
 
 async function loadSiswa() {
   try {
     const res  = await fetch(SCRIPT_URL + '?action=getSiswa');
     const json = await res.json();
-    // json.siswa = [{ id, nama }, ...]
     allSiswa = (json.siswa || []).sort((a, b) =>
       a.nama.localeCompare(b.nama, 'id', { sensitivity: 'base' })
     );
@@ -789,6 +1031,21 @@ async function loadSiswa() {
     sdEdit.setItems(allSiswa);
   } catch (e) {
     console.warn('Gagal load siswa:', e);
+  }
+}
+
+async function loadGuru() {
+  try {
+    const res  = await fetch(SCRIPT_URL + '?action=getGuru');
+    const json = await res.json();
+    // json.guru = [{ id, nama }, ...]
+    allGuru = (json.guru || []).sort((a, b) =>
+      a.nama.localeCompare(b.nama, 'id', { sensitivity: 'base' })
+    );
+    sdGuruForm.setItems(allGuru);
+    sdGuruEdit.setItems(allGuru);
+  } catch (e) {
+    console.warn('Gagal load guru:', e);
   }
 }
 
@@ -803,6 +1060,10 @@ function showView(id) {
 
 function goNew() {
   sdForm.reset();
+  sdGuruForm.reset();
+  sdGuruForm.setDisabled(true);
+  sdGuruForm.input.placeholder = 'Pilih nama siswa dahulu...';
+
   document.querySelectorAll('input[name="status"]').forEach(r => r.checked = false);
   document.getElementById('f-keterangan').value = '';
   ['f-foto', 'f-video'].forEach(id => {
@@ -812,13 +1073,16 @@ function goNew() {
   document.getElementById('f-tanggal').valueAsDate = new Date();
   document.getElementById('alertBox').style.display = 'none';
 
-  const box   = document.getElementById('f-pertemuan-box');
+  const box    = document.getElementById('f-pertemuan-box');
   const finput = document.getElementById('f-pertemuan');
   box.classList.remove('loaded');
   finput.value       = '';
   finput.disabled    = true;
   finput.placeholder = 'Pilih nama siswa dahulu...';
   finput.style.color = 'var(--muted)';
+
+  // Reset status guru badge
+  updateGuruStatusBadge('f', '', '');
 
   showView('form');
 }
@@ -833,12 +1097,16 @@ function goEdit() {
   document.getElementById('e-keterangan').value = d.keterangan || '';
 
   sdEdit.setValue(d.nama);
+  sdGuruEdit.setValue(d.namaGuru || '');
+
+  // Set badge status guru di edit view
+  const guruTetap = guruTetapCache[d.nama] || '';
+  updateGuruStatusBadge('e', d.namaGuru || '', guruTetap);
 
   const r = document.querySelector(`input[name="status-edit"][value="${d.status}"]`);
   if (r) r.checked = true;
 
-  const ke = d.pertemuanKe || 1;
-  document.getElementById('e-pertemuan').value = ke;
+  document.getElementById('e-pertemuan').value = d.pertemuanKe || 1;
 
   ['e-foto', 'e-video'].forEach(id => {
     document.getElementById(id).value = '';
@@ -886,11 +1154,26 @@ function showAlert(boxId, msg, type) {
 }
 
 // =====================================================================
+// HITUNG STATUS GURU
+// =====================================================================
+function getStatusGuru(namaGuru, namaSiswa) {
+  const guruTetap = guruTetapCache[namaSiswa] || '';
+  if (!guruTetap || namaGuru === guruTetap) return 'Guru Tetap';
+  return 'Guru Pengganti';
+}
+
+// =====================================================================
 // BUILD SUMMARY
 // =====================================================================
 function statusBadge(s) {
   const cls = { Hadir: 'badge-hadir', Izin: 'badge-izin', Alpha: 'badge-alpha' };
   return `<span class="badge ${cls[s] || ''}">${s}</span>`;
+}
+
+function guruBadge(statusGuru) {
+  if (statusGuru === 'Guru Pengganti')
+    return `<span class="badge badge-guru-pengganti">🔄 Guru Pengganti</span>`;
+  return `<span class="badge badge-guru-tetap">✓ Guru Tetap</span>`;
 }
 
 function buildSummary(d) {
@@ -900,6 +1183,8 @@ function buildSummary(d) {
     ['Nama',         d.nama],
     ['Pertemuan Ke', `<span class="badge badge-pertemuan">Ke-${d.pertemuanKe || '—'}</span>`],
     ['Status',       statusBadge(d.status)],
+    ['Guru Mengajar', d.namaGuru || '—'],
+    ['Status Guru',  d.statusGuru ? guruBadge(d.statusGuru) : '—'],
     ['Keterangan',   d.keterangan || '—'],
     ['Foto',         d.fotoUrl  ? `<a href="${d.fotoUrl}"  target="_blank" style="color:var(--accent)">Lihat foto ↗</a>`  : '—'],
     ['Video',        d.videoUrl ? `<a href="${d.videoUrl}" target="_blank" style="color:var(--accent)">Lihat video ↗</a>` : '—'],
@@ -915,7 +1200,8 @@ function buildSummary(d) {
 async function submitForm() {
   const tanggal    = document.getElementById('f-tanggal').value;
   const nama       = sdForm.getValue();
-  const idSiswa    = sdForm.getIdSiswa();          // <-- ambil ID Siswa
+  const idSiswa    = sdForm.getIdSiswa();
+  const namaGuru   = sdGuruForm.getValue();
   const statusEl   = document.querySelector('input[name="status"]:checked');
   const keterangan = document.getElementById('f-keterangan').value.trim();
   const pertemuan  = parseInt(document.getElementById('f-pertemuan').value) || 1;
@@ -926,7 +1212,10 @@ async function submitForm() {
 
   if (!tanggal)  { showAlert('alertBox', '⚠️ Tanggal wajib diisi.', 'error'); return; }
   if (!nama)     { showAlert('alertBox', '⚠️ Nama siswa wajib dipilih.', 'error'); return; }
+  if (!namaGuru) { showAlert('alertBox', '⚠️ Guru yang mengajar wajib dipilih.', 'error'); return; }
   if (!statusEl) { showAlert('alertBox', '⚠️ Status kehadiran wajib dipilih.', 'error'); return; }
+
+  const statusGuru = getStatusGuru(namaGuru, nama);
 
   setLoading(true, 'submit');
 
@@ -934,6 +1223,8 @@ async function submitForm() {
     tanggal,
     nama,
     idSiswa,
+    namaGuru,
+    statusGuru,
     status      : statusEl.value,
     keterangan,
     pertemuanKe : pertemuan || 1
@@ -981,6 +1272,7 @@ async function updateForm() {
 
   const tanggal    = document.getElementById('e-tanggal').value;
   const nama       = sdEdit.getValue();
+  const namaGuru   = sdGuruEdit.getValue();
   const statusEl   = document.querySelector('input[name="status-edit"]:checked');
   const keterangan = document.getElementById('e-keterangan').value.trim();
   const pertemuan  = parseInt(document.getElementById('e-pertemuan').value) || 1;
@@ -991,7 +1283,10 @@ async function updateForm() {
 
   if (!tanggal)  { showAlert('editAlertBox', '⚠️ Tanggal wajib diisi.', 'error'); return; }
   if (!nama)     { showAlert('editAlertBox', '⚠️ Nama siswa wajib dipilih.', 'error'); return; }
+  if (!namaGuru) { showAlert('editAlertBox', '⚠️ Guru yang mengajar wajib dipilih.', 'error'); return; }
   if (!statusEl) { showAlert('editAlertBox', '⚠️ Status wajib dipilih.', 'error'); return; }
+
+  const statusGuru = getStatusGuru(namaGuru, nama);
 
   setLoading(true, 'edit');
 
@@ -1000,10 +1295,11 @@ async function updateForm() {
     rowIndex    : lastRowIndex,
     tanggal,
     nama,
+    namaGuru,
+    statusGuru,
     status      : statusEl.value,
     keterangan,
     pertemuanKe : pertemuan
-    // idSiswa & pertemuanKe tidak diubah — diambil dari sheet di server
   };
 
   try {
