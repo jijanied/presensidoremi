@@ -608,6 +608,8 @@ let lastRowIndex   = null;
 let allSiswa       = [];
 let allGuru        = [];
 
+// Cache total pertemuan paket per siswa
+const paketSiswaCache = {};
 // Menyimpan nama guru tetap per siswa yang sudah di-fetch
 // key: nama siswa, value: nama guru tetap
 const guruTetapCache = {};
@@ -947,6 +949,110 @@ async function fetchGuruTetap(namaSiswa, prefix) {
 }
 
 // =====================================================================
+// FETCH PERTEMUAN KE
+// =====================================================================
+async function fetchPertemuan(nama, boxId, inputId, spinId) {
+  const box   = document.getElementById(boxId);
+  const input = document.getElementById(inputId);
+  const spin  = spinId ? document.getElementById(spinId) : null;
+  const prefix = boxId.startsWith('f') ? 'f' : 'e';
+
+  if (!nama) {
+    box.classList.remove('loaded');
+    input.value       = '';
+    input.disabled    = true;
+    input.placeholder = 'Pilih nama siswa dahulu...';
+    input.style.color = 'var(--muted)';
+    // Sembunyikan warning
+    const w = document.getElementById(prefix + '-pertemuan-warning');
+    if (w) w.style.display = 'none';
+    return;
+  }
+
+  box.classList.remove('loaded');
+  input.disabled    = true;
+  input.value       = '';
+  input.placeholder = 'Mengambil data...';
+  if (spin) spin.style.display = 'block';
+
+  // Fetch pertemuan & paket bersamaan
+  await fetchPaketSiswa(nama);
+
+  try {
+    const res  = await fetch(SCRIPT_URL + '?action=getPertemuan&nama=' + encodeURIComponent(nama));
+    const json = await res.json();
+
+    if (json.status === 'ok') {
+      input.value       = json.pertemuanKe;
+      input.disabled    = false;
+      input.placeholder = '';
+      input.style.color = 'var(--accent)';
+      box.classList.add('loaded');
+
+      // Cek warning setelah dapat nilai
+      cekWarningPertemuan(prefix, nama, json.pertemuanKe);
+
+      // Listener kalau guru ubah manual
+      input.oninput = () => {
+        const val = parseInt(input.value) || 0;
+        cekWarningPertemuan(prefix, nama, val);
+      };
+    } else {
+      input.placeholder = '⚠️ Gagal mengambil data';
+      input.disabled    = false;
+    }
+  } catch (err) {
+    input.placeholder = '⚠️ Gagal menghubungi server';
+    input.disabled    = false;
+  }
+
+  if (spin) spin.style.display = 'none';
+}
+// =====================================================================
+// CEK & TAMPILKAN WARNING PERTEMUAN MELEBIHI PAKET
+// =====================================================================
+function cekWarningPertemuan(prefix, namaSiswa, pertemuanKe) {
+  const warningId = prefix + '-pertemuan-warning';
+  let   warningEl = document.getElementById(warningId);
+
+  // Buat elemen warning kalau belum ada
+  if (!warningEl) {
+    warningEl    = document.createElement('div');
+    warningEl.id = warningId;
+    warningEl.style.cssText = `
+      display:none;
+      margin-top:8px;
+      padding:10px 14px;
+      border-radius:10px;
+      background:rgba(251,191,36,0.12);
+      border:1px solid rgba(251,191,36,0.35);
+      color:#fbbf24;
+      font-size:12px;
+      line-height:1.6;
+    `;
+    const box = document.getElementById(prefix + '-pertemuan-box');
+    if (box && box.parentNode) {
+      // Sisipkan setelah hint text
+      const hint = box.nextElementSibling;
+      if (hint) hint.after(warningEl);
+      else box.after(warningEl);
+    }
+  }
+
+  const total = paketSiswaCache[namaSiswa] || 0;
+
+  if (total > 0 && pertemuanKe > total) {
+    warningEl.innerHTML = `
+      ⚠️ <strong>Pertemuan ke-${pertemuanKe} melebihi batas paket (${total}x).</strong><br>
+      Pastikan admin sudah catat pembayaran baru di History Bayar.<br>
+      <span style="opacity:0.8">Guru tetap bisa submit, tapi hubungi admin segera.</span>
+    `;
+    warningEl.style.display = 'block';
+  } else {
+    warningEl.style.display = 'none';
+  }
+}
+// =====================================================================
 // INISIALISASI DROPDOWN
 // =====================================================================
 const sdForm = new SearchableDropdown({
@@ -961,6 +1067,7 @@ const sdForm = new SearchableDropdown({
   onSelect   : (nama, id) => {
     fetchPertemuan(nama, 'f-pertemuan-box', 'f-pertemuan', 'f-pertemuan-spin');
     fetchGuruTetap(nama, 'f');
+    fetchPaketSiswa(nama); // ← TAMBAH INI
   }
 });
 
