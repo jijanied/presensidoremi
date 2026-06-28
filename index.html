@@ -841,13 +841,77 @@ function updateGuruStatusBadge(prefix, namaGuru, guruTetap) {
   }
 }
 
+// Cache total pertemuan paket per siswa
+const paketSiswaCache = {};
+
+// =====================================================================
+// FETCH TOTAL PERTEMUAN PAKET SISWA
+// =====================================================================
+async function fetchPaketSiswa(namaSiswa) {
+  if (!namaSiswa) return;
+  if (paketSiswaCache[namaSiswa]) return; // sudah di-cache
+
+  try {
+    const res  = await fetch(SCRIPT_URL + '?action=getPaketSiswa&nama=' + encodeURIComponent(namaSiswa));
+    const json = await res.json();
+    if (json.status === 'ok') {
+      paketSiswaCache[namaSiswa] = json.totalPertemuan || 0;
+    }
+  } catch (e) {
+    console.warn('Gagal fetch paket siswa:', e);
+  }
+}
+
+// =====================================================================
+// CEK & TAMPILKAN WARNING PERTEMUAN MELEBIHI PAKET
+// =====================================================================
+function cekWarningPertemuan(prefix, namaSiswa, pertemuanKe) {
+  const warningId = prefix + '-pertemuan-warning';
+  let   warningEl = document.getElementById(warningId);
+
+  if (!warningEl) {
+    warningEl    = document.createElement('div');
+    warningEl.id = warningId;
+    warningEl.style.cssText = `
+      display:none;
+      margin-top:8px;
+      padding:10px 14px;
+      border-radius:10px;
+      background:rgba(251,191,36,0.12);
+      border:1px solid rgba(251,191,36,0.35);
+      color:#fbbf24;
+      font-size:12px;
+      line-height:1.6;
+    `;
+    const box = document.getElementById(prefix + '-pertemuan-box');
+    if (box && box.parentNode) {
+      const hint = box.nextElementSibling;
+      if (hint) hint.after(warningEl);
+      else box.after(warningEl);
+    }
+  }
+
+  const total = paketSiswaCache[namaSiswa] || 0;
+
+  if (total > 0 && pertemuanKe > total) {
+    warningEl.innerHTML = `
+      ⚠️ <strong>Pertemuan ke-${pertemuanKe} melebihi batas paket (${total}x).</strong><br>
+      Pastikan admin sudah catat pembayaran baru di History Bayar.<br>
+      <span style="opacity:0.8">Guru tetap bisa submit, tapi hubungi admin segera.</span>
+    `;
+    warningEl.style.display = 'block';
+  } else {
+    warningEl.style.display = 'none';
+  }
+}
 // =====================================================================
 // FETCH PERTEMUAN KE
 // =====================================================================
 async function fetchPertemuan(nama, boxId, inputId, spinId) {
-  const box   = document.getElementById(boxId);
-  const input = document.getElementById(inputId);
-  const spin  = spinId ? document.getElementById(spinId) : null;
+  const box    = document.getElementById(boxId);
+  const input  = document.getElementById(inputId);
+  const spin   = spinId ? document.getElementById(spinId) : null;
+  const prefix = boxId.startsWith('f') ? 'f' : 'e';
 
   if (!nama) {
     box.classList.remove('loaded');
@@ -855,6 +919,8 @@ async function fetchPertemuan(nama, boxId, inputId, spinId) {
     input.disabled    = true;
     input.placeholder = 'Pilih nama siswa dahulu...';
     input.style.color = 'var(--muted)';
+    const w = document.getElementById(prefix + '-pertemuan-warning');
+    if (w) w.style.display = 'none';
     return;
   }
 
@@ -863,6 +929,9 @@ async function fetchPertemuan(nama, boxId, inputId, spinId) {
   input.value       = '';
   input.placeholder = 'Mengambil data...';
   if (spin) spin.style.display = 'block';
+
+  // Fetch paket & pertemuan bersamaan
+  await fetchPaketSiswa(nama);
 
   try {
     const res  = await fetch(SCRIPT_URL + '?action=getPertemuan&nama=' + encodeURIComponent(nama));
@@ -874,6 +943,15 @@ async function fetchPertemuan(nama, boxId, inputId, spinId) {
       input.placeholder = '';
       input.style.color = 'var(--accent)';
       box.classList.add('loaded');
+
+      // Cek warning
+      cekWarningPertemuan(prefix, nama, json.pertemuanKe);
+
+      // Listener kalau guru ubah manual
+      input.oninput = () => {
+        const val = parseInt(input.value) || 0;
+        cekWarningPertemuan(prefix, nama, val);
+      };
     } else {
       input.placeholder = '⚠️ Gagal mengambil data';
       input.disabled    = false;
@@ -885,7 +963,6 @@ async function fetchPertemuan(nama, boxId, inputId, spinId) {
 
   if (spin) spin.style.display = 'none';
 }
-
 // =====================================================================
 // FETCH GURU TETAP SISWA
 // Dipanggil saat siswa dipilih. Mengisi dropdown guru dengan auto-fill
