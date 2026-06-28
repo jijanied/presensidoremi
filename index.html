@@ -1038,7 +1038,6 @@ async function loadGuru() {
   try {
     const res  = await fetch(SCRIPT_URL + '?action=getGuru');
     const json = await res.json();
-    // json.guru = [{ id, nama }, ...]
     allGuru = (json.guru || []).sort((a, b) =>
       a.nama.localeCompare(b.nama, 'id', { sensitivity: 'base' })
     );
@@ -1049,6 +1048,40 @@ async function loadGuru() {
   }
 }
 
+// =====================================================================
+// SEMBUNYIKAN PERTEMUAN KE JIKA STATUS IZIN
+// =====================================================================
+function setPertemuanVisibility(prefix, isIzin) {
+  const boxId  = prefix === 'f' ? 'f-pertemuan-box' : 'e-pertemuan-box';
+  const box    = document.getElementById(boxId);
+  const hint   = box ? box.nextElementSibling : null;
+
+  if (!box) return;
+
+  if (isIzin) {
+    box.style.opacity       = '0.35';
+    box.style.pointerEvents = 'none';
+    if (hint) hint.style.display = 'none';
+  } else {
+    box.style.opacity       = '1';
+    box.style.pointerEvents = '';
+    if (hint) hint.style.display = '';
+  }
+}
+
+// Form tambah baru
+document.querySelectorAll('input[name="status"]').forEach(radio => {
+  radio.addEventListener('change', () => {
+    setPertemuanVisibility('f', radio.value === 'Izin' && radio.checked);
+  });
+});
+
+// Form edit
+document.querySelectorAll('input[name="status-edit"]').forEach(radio => {
+  radio.addEventListener('change', () => {
+    setPertemuanVisibility('e', radio.value === 'Izin' && radio.checked);
+  });
+});
 // =====================================================================
 // NAVIGASI VIEW
 // =====================================================================
@@ -1081,12 +1114,14 @@ function goNew() {
   finput.placeholder = 'Pilih nama siswa dahulu...';
   finput.style.color = 'var(--muted)';
 
+  // Reset tampilan Pertemuan Ke (kalau sebelumnya Izin)
+  setPertemuanVisibility('f', false);
+
   // Reset status guru badge
   updateGuruStatusBadge('f', '', '');
 
   showView('form');
 }
-
 function goSuccess() { showView('success'); }
 
 function goEdit() {
