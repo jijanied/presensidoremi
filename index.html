@@ -73,7 +73,7 @@ body{
 .field label{display:block;font-size:clamp(12px,2.5vw,13px);font-weight:500;color:var(--muted);margin-bottom:7px;}
 .req{color:var(--accent);margin-left:3px;}
 
-input[type="date"],input[type="text"],select,textarea{
+input[type="date"],input[type="month"],input[type="text"],select,textarea{
   width:100%;padding:clamp(11px,2.5vw,13px) clamp(12px,3vw,15px);
   border-radius:var(--radius-sm);border:1px solid var(--input-border);
   background:var(--input-bg);color:var(--text);
@@ -82,7 +82,8 @@ input[type="date"],input[type="text"],select,textarea{
   -webkit-appearance:none;appearance:none;
 }
 input:focus,select:focus,textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--input-focus);}
-input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(1);opacity:.6;cursor:pointer;}
+input[type="date"]::-webkit-calendar-picker-indicator,
+input[type="month"]::-webkit-calendar-picker-indicator{filter:invert(1);opacity:.6;cursor:pointer;}
 textarea{resize:none;min-height:clamp(72px,15vw,90px);line-height:1.6;}
 
 /* PERTEMUAN KE INPUT */
@@ -283,7 +284,7 @@ textarea{resize:none;min-height:clamp(72px,15vw,90px);line-height:1.6;}
 /* EDIT BANNER */
 .edit-banner{margin-bottom:16px;padding:clamp(10px,2.5vw,12px) clamp(12px,3vw,15px);background:var(--amber-bg);border:1px solid rgba(251,191,36,.25);border-radius:var(--radius-sm);font-size:clamp(11px,2.5vw,12px);color:var(--amber);display:flex;align-items:center;gap:8px;}
 
-/* PERTEMUAN WARNING (dibuat statis di sini, dulu dibuat lewat JS) */
+/* PERTEMUAN WARNING */
 .pertemuan-warning{
   display:none;
   margin-top:8px;
@@ -295,6 +296,19 @@ textarea{resize:none;min-height:clamp(72px,15vw,90px);line-height:1.6;}
   font-size:12px;
   line-height:1.6;
 }
+
+/* RIWAYAT */
+.r-summary{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:14px 0;}
+.r-sum-box{background:var(--input-bg);border:1px solid var(--input-border);border-radius:var(--radius-sm);padding:10px 4px;text-align:center;}
+.r-sum-num{font-size:20px;font-weight:700;color:var(--accent);}
+.r-sum-lbl{font-size:10px;color:var(--muted);letter-spacing:.5px;margin-top:2px;}
+.r-item{background:var(--input-bg);border:1px solid var(--input-border);border-radius:var(--radius-sm);padding:12px 14px;margin-bottom:10px;}
+.r-top{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:6px;}
+.r-date{font-size:12px;color:var(--muted);font-weight:500;}
+.r-name{font-size:14px;font-weight:600;margin-bottom:6px;}
+.r-meta{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:12px;color:var(--muted);}
+.r-ket{margin-top:6px;font-size:12px;color:var(--muted);font-style:italic;}
+.r-empty{text-align:center;color:var(--muted);font-size:13px;padding:24px 0;}
 
 /* FOOTER */
 .footer{text-align:center;color:rgba(245,240,232,.3);font-size:clamp(10px,2vw,11px);padding:clamp(12px,3vw,18px) 20px;border-top:1px solid var(--card-border);letter-spacing:.3px;}
@@ -328,6 +342,8 @@ textarea{resize:none;min-height:clamp(72px,15vw,90px);line-height:1.6;}
     <!-- VIEW: FORM TAMBAH -->
     <div id="view-form" class="view active">
       <div class="form-body">
+
+        <button class="btn-secondary" style="width:100%;margin-bottom:16px;" onclick="goRiwayat()">📋 Lihat Riwayat Absen Saya</button>
 
         <div id="alertBox" class="alert"></div>
 
@@ -472,6 +488,8 @@ textarea{resize:none;min-height:clamp(72px,15vw,90px);line-height:1.6;}
           <button class="btn-secondary" onclick="goEdit()">✏️ Edit Data Ini</button>
           <button class="btn-secondary" onclick="goNew()">➕ Presensi Baru</button>
         </div>
+
+        <button class="btn-secondary" style="width:100%;margin-top:10px;" onclick="goRiwayat()">📋 Lihat Riwayat Absen</button>
       </div>
     </div>
 
@@ -608,6 +626,38 @@ textarea{resize:none;min-height:clamp(72px,15vw,90px);line-height:1.6;}
       </div>
     </div>
 
+    <!-- VIEW: RIWAYAT -->
+    <div id="view-riwayat" class="view">
+      <div class="form-body">
+        <div class="section-label">Riwayat Absen Guru</div>
+
+        <div class="field">
+          <label>Nama Guru</label>
+          <div class="searchable-wrap" id="sd-guru-riwayat">
+            <div class="searchable-input-row" id="sd-guru-riwayat-row">
+              <input type="text" id="sd-guru-riwayat-input" placeholder="Pilih nama guru..." autocomplete="off" />
+              <span class="sd-clear" id="sd-guru-riwayat-clear" title="Hapus pilihan">✕</span>
+              <span class="sd-chevron">▼</span>
+            </div>
+            <div class="sd-dropdown" id="sd-guru-riwayat-dropdown">
+              <div class="sd-list" id="sd-guru-riwayat-list"></div>
+            </div>
+            <input type="hidden" id="r-nama-guru" />
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Bulan</label>
+          <input type="month" id="r-bulan" onchange="loadRiwayat()" />
+        </div>
+
+        <div class="r-summary" id="r-summary" style="display:none;"></div>
+        <div id="r-list"><div class="r-empty">Pilih nama guru dahulu.</div></div>
+
+        <button class="btn-secondary" style="width:100%;margin-top:8px;" onclick="goNew()">← Kembali ke Form Presensi</button>
+      </div>
+    </div>
+
     <div class="footer">© 2026 Doremi Home Music Course</div>
   </div>
 </div>
@@ -634,6 +684,7 @@ const guruTetapCache = {};
 // siswa diganti-ganti cepat sebelum fetch sebelumnya selesai.
 let pertemuanRequestSeq = { f: 0, e: 0 };
 let guruRequestSeq      = { f: 0, e: 0 };
+let riwayatSeq          = 0;
 
 // =====================================================================
 // SEARCHABLE DROPDOWN CLASS
@@ -891,6 +942,21 @@ const sdGuruEdit = new SearchableDropdown({
   }
 });
 
+// Dropdown guru — riwayat
+const sdGuruRiwayat = new SearchableDropdown({
+  wrapId     : 'sd-guru-riwayat',
+  rowId      : 'sd-guru-riwayat-row',
+  inputId    : 'sd-guru-riwayat-input',
+  clearId    : 'sd-guru-riwayat-clear',
+  dropdownId : 'sd-guru-riwayat-dropdown',
+  listId     : 'sd-guru-riwayat-list',
+  hiddenId   : 'r-nama-guru',
+  onSelect   : (nama) => {
+    try { localStorage.setItem('doremi_guru', nama || ''); } catch (e) {}
+    loadRiwayat();
+  }
+});
+
 // Disable guru dropdown saat pertama load (belum pilih siswa)
 sdGuruForm.setDisabled(true);
 
@@ -1141,6 +1207,7 @@ async function loadGuru() {
     );
     sdGuruForm.setItems(allGuru);
     sdGuruEdit.setItems(allGuru);
+    sdGuruRiwayat.setItems(allGuru);
   } catch (e) {
     console.warn('Gagal load guru:', e);
   }
@@ -1256,6 +1323,97 @@ function goEdit() {
 
   document.getElementById('editAlertBox').style.display = 'none';
   showView('edit');
+}
+
+// =====================================================================
+// RIWAYAT ABSEN GURU
+// =====================================================================
+function escHtml(s) {
+  return String(s || '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+}
+
+function fmtTanggal(str) {
+  const [y, m, d] = String(str).split('-').map(Number);
+  if (!y) return str;
+  return new Date(y, m - 1, d).toLocaleDateString('id-ID', {
+    weekday: 'short', day: 'numeric', month: 'short', year: 'numeric'
+  });
+}
+
+function goRiwayat() {
+  const bulanEl = document.getElementById('r-bulan');
+  if (!bulanEl.value) {
+    const n = new Date();
+    bulanEl.value = n.getFullYear() + '-' + String(n.getMonth() + 1).padStart(2, '0');
+  }
+
+  // Isi otomatis nama guru: dari absen terakhir, atau dari pilihan tersimpan di HP
+  if (!sdGuruRiwayat.getValue()) {
+    let g = '';
+    try { g = (lastSubmitted && lastSubmitted.namaGuru) || localStorage.getItem('doremi_guru') || ''; } catch (e) {}
+    if (g) sdGuruRiwayat.setValue(g);
+  }
+
+  showView('riwayat');
+  loadRiwayat();
+}
+
+async function loadRiwayat() {
+  const guru  = sdGuruRiwayat.getValue();
+  const bulan = document.getElementById('r-bulan').value;
+  const list  = document.getElementById('r-list');
+  const sum   = document.getElementById('r-summary');
+
+  if (!guru) {
+    sum.style.display = 'none';
+    list.innerHTML = '<div class="r-empty">Pilih nama guru dahulu.</div>';
+    return;
+  }
+
+  const seq = ++riwayatSeq;
+  list.innerHTML = '<div class="r-empty">Memuat riwayat...</div>';
+
+  try {
+    const res  = await fetch(SCRIPT_URL + '?action=getRiwayatAbsen&guru=' + encodeURIComponent(guru) + '&bulan=' + encodeURIComponent(bulan));
+    const json = await res.json();
+    if (seq !== riwayatSeq) return;
+
+    if (json.status !== 'ok') {
+      list.innerHTML = '<div class="r-empty">❌ ' + escHtml(json.message || 'Gagal memuat') + '</div>';
+      return;
+    }
+
+    const r = json.ringkasan;
+    sum.innerHTML =
+      `<div class="r-sum-box"><div class="r-sum-num">${r.total}</div><div class="r-sum-lbl">TOTAL</div></div>` +
+      `<div class="r-sum-box"><div class="r-sum-num" style="color:var(--green)">${r.hadir}</div><div class="r-sum-lbl">HADIR</div></div>` +
+      `<div class="r-sum-box"><div class="r-sum-num" style="color:var(--amber)">${r.izin}</div><div class="r-sum-lbl">IZIN</div></div>` +
+      `<div class="r-sum-box"><div class="r-sum-num" style="color:var(--red)">${r.alpha}</div><div class="r-sum-lbl">ALPHA</div></div>`;
+    sum.style.display = 'grid';
+
+    if (!json.riwayat.length) {
+      list.innerHTML = '<div class="r-empty">Belum ada absen tercatat di bulan ini.</div>';
+      return;
+    }
+
+    list.innerHTML = json.riwayat.map(x => `
+      <div class="r-item">
+        <div class="r-top">
+          <span class="r-date">${fmtTanggal(x.tanggal)}</span>
+          ${statusBadge(x.status)}
+        </div>
+        <div class="r-name">${escHtml(x.nama)}</div>
+        <div class="r-meta">
+          ${x.pertemuanKe ? `<span class="badge badge-pertemuan">Ke-${x.pertemuanKe}</span>` : ''}
+          ${guruBadge(x.statusGuru)}
+        </div>
+        ${x.keterangan ? `<div class="r-ket">${escHtml(x.keterangan)}</div>` : ''}
+      </div>`).join('');
+
+  } catch (err) {
+    if (seq !== riwayatSeq) return;
+    list.innerHTML = '<div class="r-empty">❌ Gagal menghubungi server.</div>';
+  }
 }
 
 // =====================================================================
@@ -1387,6 +1545,9 @@ async function submitForm() {
         videoUrl    : json.videoUrl || ''
       };
       lastRowIndex = json.rowIndex || null;
+
+      // Simpan nama guru di HP supaya riwayat terisi otomatis
+      try { localStorage.setItem('doremi_guru', namaGuru); } catch (e) {}
 
       document.getElementById('success-sub').textContent =
         'ID: ' + (json.id || '—') + ' · Tersimpan di spreadsheet';
