@@ -35,13 +35,7 @@
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 html{scroll-behavior:smooth;}
-body{
-  font-family:'Plus Jakarta Sans',sans-serif;
-  background:var(--bg);
-  min-height:100vh;
-  color:var(--text);
-  overflow-x:hidden;
-}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);min-height:100vh;color:var(--text);overflow-x:hidden;}
 
 /* BG */
 .bg-art{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none;}
@@ -52,8 +46,6 @@ body{
 
 /* LAYOUT */
 .page{position:relative;z-index:1;min-height:100vh;padding:clamp(16px,4vw,40px) clamp(12px,4vw,24px);display:flex;flex-direction:column;align-items:center;}
-
-/* CARD */
 .card{width:100%;max-width:540px;background:var(--card);border:1px solid var(--card-border);border-radius:28px;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.4);}
 
 /* HEADER */
@@ -66,7 +58,7 @@ body{
 .view{display:none;}
 .view.active{display:block;}
 
-/* FORM BODY */
+/* FORM */
 .form-body{padding:clamp(18px,4vw,28px) clamp(16px,4vw,28px);}
 .section-label{font-size:10px;font-weight:600;letter-spacing:1.8px;text-transform:uppercase;color:var(--muted);margin-bottom:14px;padding-bottom:8px;border-bottom:1px solid var(--card-border);}
 .field{margin-bottom:16px;}
@@ -86,123 +78,40 @@ input[type="date"]::-webkit-calendar-picker-indicator,
 input[type="month"]::-webkit-calendar-picker-indicator{filter:invert(1);opacity:.6;cursor:pointer;}
 textarea{resize:none;min-height:clamp(72px,15vw,90px);line-height:1.6;}
 
-/* PERTEMUAN KE INPUT */
-.pertemuan-input-wrap{
-  display:flex;align-items:center;gap:10px;
-  padding:clamp(11px,2.5vw,13px) clamp(12px,3vw,15px);
-  border-radius:var(--radius-sm);
-  border:1px solid var(--input-border);
-  background:var(--input-bg);
-  min-height:46px;
-  cursor:text;
-  transition:border-color var(--tr),box-shadow var(--tr),background var(--tr);
-}
-.pertemuan-input-wrap:focus-within{
-  border-color:var(--accent);
-  box-shadow:0 0 0 3px var(--input-focus);
-}
-.pertemuan-input-wrap.loaded{
-  border-color:rgba(245,166,35,.4);
-  background:rgba(245,166,35,.06);
-}
-.pertemuan-input-wrap.loaded:focus-within{
-  border-color:var(--accent);
-  box-shadow:0 0 0 3px var(--input-focus);
-}
+/* PERTEMUAN KE */
+.pertemuan-input-wrap{display:flex;align-items:center;gap:10px;padding:clamp(11px,2.5vw,13px) clamp(12px,3vw,15px);border-radius:var(--radius-sm);border:1px solid var(--input-border);background:var(--input-bg);min-height:46px;cursor:text;transition:border-color var(--tr),box-shadow var(--tr),background var(--tr);}
+.pertemuan-input-wrap:focus-within{border-color:var(--accent);box-shadow:0 0 0 3px var(--input-focus);}
+.pertemuan-input-wrap.loaded{border-color:rgba(245,166,35,.4);background:rgba(245,166,35,.06);}
+.pertemuan-input-wrap.loaded:focus-within{border-color:var(--accent);box-shadow:0 0 0 3px var(--input-focus);}
 .pertemuan-input-wrap input[type="number"]::-webkit-inner-spin-button,
-.pertemuan-input-wrap input[type="number"]::-webkit-outer-spin-button{
-  -webkit-appearance:none;margin:0;
-}
+.pertemuan-input-wrap input[type="number"]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0;}
 .pertemuan-input-wrap input[type="number"]{-moz-appearance:textfield;}
 .pertemuan-input-wrap input:disabled{opacity:.45;cursor:not-allowed;}
 .pertemuan-badge-inline{font-size:18px;flex-shrink:0;line-height:1;}
-.pertemuan-spin{
-  width:14px;height:14px;
-  border:2px solid rgba(245,166,35,.3);
-  border-top-color:var(--accent);
-  border-radius:50%;
-  animation:spin .7s linear infinite;
-  display:none;flex-shrink:0;margin-left:auto;
-}
+.pertemuan-spin{width:14px;height:14px;border:2px solid rgba(245,166,35,.3);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite;display:none;flex-shrink:0;margin-left:auto;}
 
 /* GURU STATUS BADGE */
-.guru-status-wrap{
-  display:flex;align-items:center;gap:10px;
-  padding:clamp(10px,2.5vw,12px) clamp(12px,3vw,15px);
-  border-radius:var(--radius-sm);
-  border:1px solid var(--input-border);
-  background:var(--input-bg);
-  min-height:44px;
-  transition:border-color var(--tr),background var(--tr);
-}
-.guru-status-wrap.is-tetap{
-  border-color:rgba(96,165,250,.35);
-  background:rgba(96,165,250,.07);
-}
-.guru-status-wrap.is-pengganti{
-  border-color:rgba(167,139,250,.35);
-  background:rgba(167,139,250,.07);
-}
-.guru-status-badge{
-  display:inline-flex;align-items:center;gap:5px;
-  padding:3px 10px;border-radius:20px;
-  font-size:12px;font-weight:600;letter-spacing:.3px;
-  transition:all var(--tr);
-}
-.guru-status-badge.tetap{
-  background:var(--blue-bg);color:var(--blue);
-  border:1px solid rgba(96,165,250,.3);
-}
-.guru-status-badge.pengganti{
-  background:var(--purple-bg);color:var(--purple);
-  border:1px solid rgba(167,139,250,.3);
-}
-.guru-status-badge.empty{
-  background:var(--input-bg);color:var(--muted);
-  border:1px solid var(--input-border);
-}
-.guru-spin{
-  width:14px;height:14px;
-  border:2px solid rgba(245,166,35,.3);
-  border-top-color:var(--accent);
-  border-radius:50%;
-  animation:spin .7s linear infinite;
-  display:none;flex-shrink:0;
-}
+.guru-status-wrap{display:flex;align-items:center;gap:10px;padding:clamp(10px,2.5vw,12px) clamp(12px,3vw,15px);border-radius:var(--radius-sm);border:1px solid var(--input-border);background:var(--input-bg);min-height:44px;transition:border-color var(--tr),background var(--tr);}
+.guru-status-wrap.is-tetap{border-color:rgba(96,165,250,.35);background:rgba(96,165,250,.07);}
+.guru-status-wrap.is-pengganti{border-color:rgba(167,139,250,.35);background:rgba(167,139,250,.07);}
+.guru-status-badge{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:600;letter-spacing:.3px;transition:all var(--tr);}
+.guru-status-badge.tetap{background:var(--blue-bg);color:var(--blue);border:1px solid rgba(96,165,250,.3);}
+.guru-status-badge.pengganti{background:var(--purple-bg);color:var(--purple);border:1px solid rgba(167,139,250,.3);}
+.guru-status-badge.empty{background:var(--input-bg);color:var(--muted);border:1px solid var(--input-border);}
+.guru-spin{width:14px;height:14px;border:2px solid rgba(245,166,35,.3);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite;display:none;flex-shrink:0;}
 
 /* SEARCHABLE DROPDOWN */
 .searchable-wrap{position:relative;}
-.searchable-input-row{
-  display:flex;align-items:center;
-  width:100%;padding:clamp(11px,2.5vw,13px) clamp(12px,3vw,15px);
-  border-radius:var(--radius-sm);border:1px solid var(--input-border);
-  background:var(--input-bg);
-  transition:border-color var(--tr),box-shadow var(--tr);
-  cursor:text;
-}
-.searchable-input-row.open,
-.searchable-input-row:focus-within{
-  border-color:var(--accent);
-  box-shadow:0 0 0 3px var(--input-focus);
-}
-.searchable-input-row input{
-  flex:1;border:none;background:transparent;
-  color:var(--text);font-size:clamp(13px,3vw,14px);font-family:inherit;
-  outline:none;padding:0;min-width:0;
-  -webkit-appearance:none;appearance:none;
-}
+.searchable-input-row{display:flex;align-items:center;width:100%;padding:clamp(11px,2.5vw,13px) clamp(12px,3vw,15px);border-radius:var(--radius-sm);border:1px solid var(--input-border);background:var(--input-bg);transition:border-color var(--tr),box-shadow var(--tr);cursor:text;}
+.searchable-input-row.open,.searchable-input-row:focus-within{border-color:var(--accent);box-shadow:0 0 0 3px var(--input-focus);}
+.searchable-input-row input{flex:1;border:none;background:transparent;color:var(--text);font-size:clamp(13px,3vw,14px);font-family:inherit;outline:none;padding:0;min-width:0;-webkit-appearance:none;appearance:none;}
 .searchable-input-row input::placeholder{color:var(--muted);}
 .sd-chevron{flex-shrink:0;margin-left:8px;color:var(--muted);font-size:12px;transition:transform var(--tr);pointer-events:none;user-select:none;}
 .searchable-input-row.open .sd-chevron{transform:rotate(180deg);}
 .sd-clear{flex-shrink:0;margin-left:6px;color:var(--muted);font-size:14px;cursor:pointer;line-height:1;display:none;padding:0 2px;transition:color var(--tr);}
 .sd-clear:hover{color:var(--red);}
 .sd-clear.show{display:block;}
-.sd-dropdown{
-  position:absolute;top:calc(100% + 6px);left:0;right:0;
-  background:#1c1b28;border:1px solid var(--input-border);
-  border-radius:var(--radius-sm);box-shadow:0 12px 40px rgba(0,0,0,.55);
-  z-index:999;overflow:hidden;display:none;animation:sdIn .15s ease;
-}
+.sd-dropdown{position:absolute;top:calc(100% + 6px);left:0;right:0;background:#1c1b28;border:1px solid var(--input-border);border-radius:var(--radius-sm);box-shadow:0 12px 40px rgba(0,0,0,.55);z-index:999;overflow:hidden;display:none;animation:sdIn .15s ease;}
 .sd-dropdown.open{display:block;}
 @keyframes sdIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
 .sd-list{max-height:220px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.15) transparent;}
@@ -237,7 +146,6 @@ textarea{resize:none;min-height:clamp(72px,15vw,90px);line-height:1.6;}
 .upload-hint{font-size:clamp(10px,2vw,11px);color:rgba(245,240,232,.35);margin-top:3px;}
 .file-preview{margin-top:8px;font-size:clamp(11px,2.5vw,12px);color:var(--green);display:none;align-items:center;gap:6px;justify-content:center;word-break:break-all;}
 .file-preview.show{display:flex;}
-
 .divider{border:none;border-top:1px solid var(--card-border);margin:clamp(14px,3vw,20px) 0;}
 
 /* BUTTON */
@@ -245,7 +153,6 @@ textarea{resize:none;min-height:clamp(72px,15vw,90px);line-height:1.6;}
 .btn-submit:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 6px 28px rgba(245,166,35,.45);}
 .btn-submit:active:not(:disabled){transform:translateY(0) scale(.99);}
 .btn-submit:disabled{opacity:.5;cursor:not-allowed;}
-
 .spinner{width:16px;height:16px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;display:none;flex-shrink:0;}
 @keyframes spin{to{transform:rotate(360deg)}}
 
@@ -254,7 +161,10 @@ textarea{resize:none;min-height:clamp(72px,15vw,90px);line-height:1.6;}
 .alert.success{background:var(--green-bg);color:var(--green);border:1px solid rgba(74,222,128,.25);display:flex;}
 .alert.error{background:var(--red-bg);color:var(--red);border:1px solid rgba(248,113,113,.25);display:flex;}
 
-/* SUCCESS VIEW */
+/* BANNER CUTI TANGGAL 1 (BARU) */
+.cuti-banner{display:none;margin-bottom:16px;padding:12px 15px;border-radius:var(--radius-sm);background:var(--blue-bg);border:1px solid rgba(96,165,250,.3);color:var(--blue);font-size:12px;line-height:1.6;}
+
+/* SUCCESS */
 .success-view{padding:clamp(28px,6vw,48px) clamp(20px,5vw,36px);text-align:center;}
 .success-icon{width:clamp(64px,15vw,80px);height:clamp(64px,15vw,80px);border-radius:50%;background:var(--green-bg);border:2px solid var(--green);display:flex;align-items:center;justify-content:center;font-size:clamp(28px,7vw,36px);margin:0 auto 18px;animation:popIn .4s cubic-bezier(.175,.885,.32,1.275);}
 @keyframes popIn{from{transform:scale(.5);opacity:0}to{transform:scale(1);opacity:1}}
@@ -285,17 +195,7 @@ textarea{resize:none;min-height:clamp(72px,15vw,90px);line-height:1.6;}
 .edit-banner{margin-bottom:16px;padding:clamp(10px,2.5vw,12px) clamp(12px,3vw,15px);background:var(--amber-bg);border:1px solid rgba(251,191,36,.25);border-radius:var(--radius-sm);font-size:clamp(11px,2.5vw,12px);color:var(--amber);display:flex;align-items:center;gap:8px;}
 
 /* PERTEMUAN WARNING */
-.pertemuan-warning{
-  display:none;
-  margin-top:8px;
-  padding:10px 14px;
-  border-radius:10px;
-  background:rgba(251,191,36,0.12);
-  border:1px solid rgba(251,191,36,0.35);
-  color:#fbbf24;
-  font-size:12px;
-  line-height:1.6;
-}
+.pertemuan-warning{display:none;margin-top:8px;padding:10px 14px;border-radius:10px;background:rgba(251,191,36,0.12);border:1px solid rgba(251,191,36,0.35);color:#fbbf24;font-size:12px;line-height:1.6;}
 
 /* RIWAYAT */
 .r-summary{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:14px 0;}
@@ -308,6 +208,8 @@ textarea{resize:none;min-height:clamp(72px,15vw,90px);line-height:1.6;}
 .r-name{font-size:14px;font-weight:600;margin-bottom:6px;}
 .r-meta{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:12px;color:var(--muted);}
 .r-ket{margin-top:6px;font-size:12px;color:var(--muted);font-style:italic;}
+.r-materi{margin-top:6px;font-size:12px;color:var(--text);}
+.r-materi b{color:var(--accent);font-weight:600;}
 .r-empty{text-align:center;color:var(--muted);font-size:13px;padding:24px 0;}
 
 /* FOOTER */
@@ -320,9 +222,7 @@ textarea{resize:none;min-height:clamp(72px,15vw,90px);line-height:1.6;}
   .radio-box label{font-size:11px;height:40px;}
   .btn-row{grid-template-columns:1fr;}
 }
-@media(min-width:600px){
-  .page{padding:40px 24px;}
-}
+@media(min-width:600px){.page{padding:40px 24px;}}
 </style>
 </head>
 <body>
@@ -346,16 +246,15 @@ textarea{resize:none;min-height:clamp(72px,15vw,90px);line-height:1.6;}
         <button class="btn-secondary" style="width:100%;margin-bottom:16px;" onclick="goRiwayat()">📋 Lihat Riwayat Absen Saya</button>
 
         <div id="alertBox" class="alert"></div>
+        <div class="cuti-banner" id="f-cuti-banner">🌴 Tanggal 1 otomatis cuti. Presensi tidak perlu diisi.</div>
 
         <div class="section-label">Data Kehadiran</div>
 
-        <!-- Tanggal -->
         <div class="field">
           <label>Tanggal <span class="req">*</span></label>
           <input type="date" id="f-tanggal" required />
         </div>
 
-        <!-- Nama Siswa -->
         <div class="field">
           <label>Nama Siswa <span class="req">*</span></label>
           <div class="searchable-wrap" id="sd-form">
@@ -372,7 +271,6 @@ textarea{resize:none;min-height:clamp(72px,15vw,90px);line-height:1.6;}
           </div>
         </div>
 
-        <!-- Pertemuan Ke -->
         <div class="field">
           <label>Pertemuan Ke</label>
           <div class="pertemuan-input-wrap" id="f-pertemuan-box">
@@ -387,7 +285,6 @@ textarea{resize:none;min-height:clamp(72px,15vw,90px);line-height:1.6;}
           <div class="pertemuan-warning" id="f-pertemuan-warning"></div>
         </div>
 
-        <!-- Nama Guru -->
         <div class="field">
           <label>Guru yang Mengajar <span class="req">*</span></label>
           <div class="searchable-wrap" id="sd-guru-form">
@@ -402,7 +299,6 @@ textarea{resize:none;min-height:clamp(72px,15vw,90px);line-height:1.6;}
             </div>
             <input type="hidden" id="f-nama-guru" />
           </div>
-          <!-- Status Guru badge -->
           <div style="margin-top:8px;">
             <div class="guru-status-wrap" id="f-guru-status-wrap">
               <div class="guru-spin" id="f-guru-spin"></div>
@@ -415,7 +311,6 @@ textarea{resize:none;min-height:clamp(72px,15vw,90px);line-height:1.6;}
           </div>
         </div>
 
-        <!-- Status -->
         <div class="field">
           <label>Status Kehadiran <span class="req">*</span></label>
           <div class="status-grid">
@@ -434,7 +329,12 @@ textarea{resize:none;min-height:clamp(72px,15vw,90px);line-height:1.6;}
           </div>
         </div>
 
-        <!-- Keterangan -->
+        <!-- MATERI (BARU) -->
+        <div class="field">
+          <label>Materi yang Diajarkan</label>
+          <textarea id="f-materi" placeholder="Contoh: tangga nada C mayor, lagu Twinkle Twinkle..."></textarea>
+        </div>
+
         <div class="field">
           <label>Keterangan</label>
           <textarea id="f-keterangan" placeholder="Tambahkan catatan jika diperlukan..."></textarea>
@@ -443,7 +343,6 @@ textarea{resize:none;min-height:clamp(72px,15vw,90px);line-height:1.6;}
         <hr class="divider" />
         <div class="section-label">Dokumentasi (Opsional)</div>
 
-        <!-- Foto -->
         <div class="field">
           <label>Foto</label>
           <div class="upload-area">
@@ -455,7 +354,6 @@ textarea{resize:none;min-height:clamp(72px,15vw,90px);line-height:1.6;}
           </div>
         </div>
 
-        <!-- Video -->
         <div class="field">
           <label>Video</label>
           <div class="upload-area">
@@ -500,16 +398,15 @@ textarea{resize:none;min-height:clamp(72px,15vw,90px);line-height:1.6;}
         <div class="edit-banner">✏️ Mengedit presensi yang baru dikirim</div>
 
         <div id="editAlertBox" class="alert"></div>
+        <div class="cuti-banner" id="e-cuti-banner">🌴 Tanggal 1 otomatis cuti. Presensi tidak perlu diisi.</div>
 
         <div class="section-label">Edit Data Kehadiran</div>
 
-        <!-- Tanggal edit -->
         <div class="field">
           <label>Tanggal <span class="req">*</span></label>
           <input type="date" id="e-tanggal" required />
         </div>
 
-        <!-- Nama Siswa edit -->
         <div class="field">
           <label>Nama Siswa <span class="req">*</span></label>
           <div class="searchable-wrap" id="sd-edit">
@@ -525,7 +422,6 @@ textarea{resize:none;min-height:clamp(72px,15vw,90px);line-height:1.6;}
           </div>
         </div>
 
-        <!-- Pertemuan Ke edit -->
         <div class="field">
           <label>Pertemuan Ke</label>
           <div class="pertemuan-input-wrap loaded" id="e-pertemuan-box">
@@ -539,7 +435,6 @@ textarea{resize:none;min-height:clamp(72px,15vw,90px);line-height:1.6;}
           <div class="pertemuan-warning" id="e-pertemuan-warning"></div>
         </div>
 
-        <!-- Nama Guru edit -->
         <div class="field">
           <label>Guru yang Mengajar <span class="req">*</span></label>
           <div class="searchable-wrap" id="sd-guru-edit">
@@ -553,7 +448,6 @@ textarea{resize:none;min-height:clamp(72px,15vw,90px);line-height:1.6;}
             </div>
             <input type="hidden" id="e-nama-guru" />
           </div>
-          <!-- Status Guru badge edit -->
           <div style="margin-top:8px;">
             <div class="guru-status-wrap" id="e-guru-status-wrap">
               <div class="guru-spin" id="e-guru-spin"></div>
@@ -563,7 +457,6 @@ textarea{resize:none;min-height:clamp(72px,15vw,90px);line-height:1.6;}
           </div>
         </div>
 
-        <!-- Status edit -->
         <div class="field">
           <label>Status Kehadiran <span class="req">*</span></label>
           <div class="status-grid">
@@ -582,7 +475,12 @@ textarea{resize:none;min-height:clamp(72px,15vw,90px);line-height:1.6;}
           </div>
         </div>
 
-        <!-- Keterangan edit -->
+        <!-- MATERI (BARU) -->
+        <div class="field">
+          <label>Materi yang Diajarkan</label>
+          <textarea id="e-materi" placeholder="Contoh: tangga nada C mayor, lagu Twinkle Twinkle..."></textarea>
+        </div>
+
         <div class="field">
           <label>Keterangan</label>
           <textarea id="e-keterangan" placeholder="Tambahkan catatan jika diperlukan..."></textarea>
@@ -591,7 +489,6 @@ textarea{resize:none;min-height:clamp(72px,15vw,90px);line-height:1.6;}
         <hr class="divider" />
         <div class="section-label">Dokumentasi (kosongkan jika tidak ingin mengubah)</div>
 
-        <!-- Foto edit -->
         <div class="field">
           <label>Foto Baru</label>
           <div class="upload-area">
@@ -603,7 +500,6 @@ textarea{resize:none;min-height:clamp(72px,15vw,90px);line-height:1.6;}
           </div>
         </div>
 
-        <!-- Video edit -->
         <div class="field">
           <label>Video Baru</label>
           <div class="upload-area">
@@ -662,989 +558,4 @@ textarea{resize:none;min-height:clamp(72px,15vw,90px);line-height:1.6;}
   </div>
 </div>
 
-<script>
-// ============================================================
-// GANTI dengan URL deployment Google Apps Script kamu
-// ============================================================
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzDgJIFdTkeVht-QyTIEnHZlWGS-TcJTtPVz1IdSFdds5XvAsQdRmZjZbcYVoyM1yYS/exec';
-// ============================================================
-
-let lastSubmitted  = null;
-let lastRowIndex   = null;
-let allSiswa       = [];
-let allGuru        = [];
-
-// Cache total pertemuan paket per siswa
-const paketSiswaCache = {};
-// Menyimpan nama guru tetap per siswa yang sudah di-fetch
-// key: nama siswa, value: nama guru tetap
-const guruTetapCache = {};
-
-// Penanda "permintaan terbaru" untuk hindari race condition saat
-// siswa diganti-ganti cepat sebelum fetch sebelumnya selesai.
-let pertemuanRequestSeq = { f: 0, e: 0 };
-let guruRequestSeq      = { f: 0, e: 0 };
-let riwayatSeq          = 0;
-
-// =====================================================================
-// SEARCHABLE DROPDOWN CLASS
-// =====================================================================
-class SearchableDropdown {
-  constructor(cfg) {
-    this.wrap     = document.getElementById(cfg.wrapId);
-    this.row      = document.getElementById(cfg.rowId);
-    this.input    = document.getElementById(cfg.inputId);
-    this.clearBtn = document.getElementById(cfg.clearId);
-    this.dropdown = document.getElementById(cfg.dropdownId);
-    this.list     = document.getElementById(cfg.listId);
-    this.hidden   = document.getElementById(cfg.hiddenId);
-    this.hiddenId = cfg.hiddenIdId ? document.getElementById(cfg.hiddenIdId) : null;
-    this.items    = [];
-    this.selected = '';
-    this.focusIdx = -1;
-    this.onSelect = cfg.onSelect || null;
-    this._bind();
-  }
-
-  setItems(arr) {
-    this.items = arr.map(i => typeof i === 'string' ? { id: '', nama: i } : i)
-      .sort((a, b) => a.nama.localeCompare(b.nama, 'id', { sensitivity: 'base' }));
-    this._renderList('');
-  }
-
-  setValue(nama, id) {
-    this.selected     = nama;
-    this.input.value  = nama;
-    this.hidden.value = nama;
-    if (this.hiddenId) this.hiddenId.value = id || '';
-    this._toggleClear();
-    this._renderList(this.input.value);
-  }
-
-  reset() {
-    this.selected     = '';
-    this.input.value  = '';
-    this.hidden.value = '';
-    if (this.hiddenId) this.hiddenId.value = '';
-    this.focusIdx     = -1;
-    this._toggleClear();
-    this._close();
-    this._renderList('');
-  }
-
-  getValue()   { return this.hidden.value; }
-  getIdSiswa() { return this.hiddenId ? this.hiddenId.value : ''; }
-
-  setDisabled(disabled) {
-    this.input.disabled = disabled;
-    this.input.style.cursor  = disabled ? 'not-allowed' : '';
-    this.input.style.opacity = disabled ? '0.5' : '1';
-    if (disabled) this._close();
-  }
-
-  _bind() {
-    this.row.addEventListener('click', () => {
-      if (!this.input.disabled) { this._open(); this.input.focus(); }
-    });
-
-    this.input.addEventListener('input', () => {
-      this.selected     = '';
-      this.hidden.value = '';
-      if (this.hiddenId) this.hiddenId.value = '';
-      this.focusIdx     = -1;
-      this._toggleClear();
-      this._renderList(this.input.value);
-      this._open();
-    });
-
-    this.input.addEventListener('keydown', e => this._onKey(e));
-
-    this.clearBtn.addEventListener('click', e => {
-      e.stopPropagation();
-      this.reset();
-      this.input.focus();
-      this._open();
-      if (this.onSelect) this.onSelect('', '');
-    });
-
-    document.addEventListener('click', e => {
-      if (!this.wrap.contains(e.target)) this._close();
-    });
-  }
-
-  _open() {
-    if (this.input.disabled) return;
-    this.row.classList.add('open');
-    this.dropdown.classList.add('open');
-    this._renderList(this.input.value);
-  }
-
-  _close() {
-    this.row.classList.remove('open');
-    this.dropdown.classList.remove('open');
-    this.focusIdx = -1;
-    if (this.selected) this.input.value = this.selected;
-    else if (!this.hidden.value) this.input.value = '';
-  }
-
-  _toggleClear() {
-    if (this.input.value || this.selected) this.clearBtn.classList.add('show');
-    else this.clearBtn.classList.remove('show');
-  }
-
-  _renderList(query) {
-    const q        = query.trim().toLowerCase();
-    const filtered = q
-      ? this.items.filter(s => s.nama.toLowerCase().includes(q))
-      : this.items;
-
-    if (!filtered.length) {
-      this.list.innerHTML = `<div class="sd-empty">Tidak ditemukan</div>`;
-      return;
-    }
-
-    let html = '';
-    let lastLetter = '';
-    filtered.forEach(s => {
-      const letter = s.nama[0].toUpperCase();
-      if (letter !== lastLetter) {
-        html += `<div class="sd-letter-group">${letter}</div>`;
-        lastLetter = letter;
-      }
-      const initial = s.nama.substring(0, 2).toUpperCase();
-      const isSel   = s.nama === this.selected;
-      const display = q ? this._highlight(s.nama, q) : s.nama;
-      html += `<div class="sd-item${isSel ? ' selected' : ''}" data-val="${s.nama}" data-id="${s.id || ''}">
-        <span class="sd-initial">${initial}</span>${display}
-      </div>`;
-    });
-    this.list.innerHTML = html;
-
-    this.list.querySelectorAll('.sd-item').forEach(el => {
-      el.addEventListener('mousedown', e => {
-        e.preventDefault();
-        this._select(el.dataset.val, el.dataset.id);
-      });
-    });
-
-    const sel = this.list.querySelector('.sd-item.selected');
-    if (sel) sel.scrollIntoView({ block: 'nearest' });
-  }
-
-  _highlight(nama, q) {
-    const idx = nama.toLowerCase().indexOf(q);
-    if (idx === -1) return nama;
-    return nama.substring(0, idx) +
-      `<mark style="background:rgba(245,166,35,.3);color:var(--accent);border-radius:2px;">${nama.substring(idx, idx + q.length)}</mark>` +
-      nama.substring(idx + q.length);
-  }
-
-  _select(nama, id) {
-    this.selected     = nama;
-    this.hidden.value = nama;
-    if (this.hiddenId) this.hiddenId.value = id || '';
-    this.input.value  = nama;
-    this._toggleClear();
-    this._close();
-    if (this.onSelect) this.onSelect(nama, id);
-  }
-
-  _onKey(e) {
-    const items = [...this.list.querySelectorAll('.sd-item')];
-    if (!items.length) return;
-    if (e.key === 'ArrowDown') {
-      e.preventDefault();
-      this.focusIdx = Math.min(this.focusIdx + 1, items.length - 1);
-      this._applyFocus(items);
-    } else if (e.key === 'ArrowUp') {
-      e.preventDefault();
-      this.focusIdx = Math.max(this.focusIdx - 1, 0);
-      this._applyFocus(items);
-    } else if (e.key === 'Enter') {
-      e.preventDefault();
-      if (this.focusIdx >= 0 && items[this.focusIdx]) {
-        const el = items[this.focusIdx];
-        this._select(el.dataset.val, el.dataset.id);
-      }
-    } else if (e.key === 'Escape') {
-      this._close();
-    }
-  }
-
-  _applyFocus(items) {
-    items.forEach((el, i) => {
-      el.classList.toggle('focused', i === this.focusIdx);
-      if (i === this.focusIdx) el.scrollIntoView({ block: 'nearest' });
-    });
-  }
-}
-
-// =====================================================================
-// INISIALISASI DROPDOWN
-// =====================================================================
-const sdForm = new SearchableDropdown({
-  wrapId     : 'sd-form',
-  rowId      : 'sd-form-row',
-  inputId    : 'sd-form-input',
-  clearId    : 'sd-form-clear',
-  dropdownId : 'sd-form-dropdown',
-  listId     : 'sd-form-list',
-  hiddenId   : 'f-nama',
-  hiddenIdId : 'f-id-siswa',
-  onSelect   : (nama) => {
-    fetchPertemuan(nama, 'f');
-    fetchGuruTetap(nama, 'f');
-  }
-});
-
-const sdEdit = new SearchableDropdown({
-  wrapId     : 'sd-edit',
-  rowId      : 'sd-edit-row',
-  inputId    : 'sd-edit-input',
-  clearId    : 'sd-edit-clear',
-  dropdownId : 'sd-edit-dropdown',
-  listId     : 'sd-edit-list',
-  hiddenId   : 'e-nama',
-  onSelect   : (nama) => {
-    fetchGuruTetap(nama, 'e');
-  }
-});
-
-// Dropdown guru — form
-const sdGuruForm = new SearchableDropdown({
-  wrapId     : 'sd-guru-form',
-  rowId      : 'sd-guru-form-row',
-  inputId    : 'sd-guru-form-input',
-  clearId    : 'sd-guru-form-clear',
-  dropdownId : 'sd-guru-form-dropdown',
-  listId     : 'sd-guru-form-list',
-  hiddenId   : 'f-nama-guru',
-  onSelect   : (namaGuru) => {
-    const namaSiswa = sdForm.getValue();
-    const guruTetap = guruTetapCache[namaSiswa] || '';
-    updateGuruStatusBadge('f', namaGuru, guruTetap);
-  }
-});
-
-// Dropdown guru — edit
-const sdGuruEdit = new SearchableDropdown({
-  wrapId     : 'sd-guru-edit',
-  rowId      : 'sd-guru-edit-row',
-  inputId    : 'sd-guru-edit-input',
-  clearId    : 'sd-guru-edit-clear',
-  dropdownId : 'sd-guru-edit-dropdown',
-  listId     : 'sd-guru-edit-list',
-  hiddenId   : 'e-nama-guru',
-  onSelect   : (namaGuru) => {
-    const namaSiswa = sdEdit.getValue();
-    const guruTetap = guruTetapCache[namaSiswa] || '';
-    updateGuruStatusBadge('e', namaGuru, guruTetap);
-  }
-});
-
-// Dropdown guru — riwayat
-const sdGuruRiwayat = new SearchableDropdown({
-  wrapId     : 'sd-guru-riwayat',
-  rowId      : 'sd-guru-riwayat-row',
-  inputId    : 'sd-guru-riwayat-input',
-  clearId    : 'sd-guru-riwayat-clear',
-  dropdownId : 'sd-guru-riwayat-dropdown',
-  listId     : 'sd-guru-riwayat-list',
-  hiddenId   : 'r-nama-guru',
-  onSelect   : (nama) => {
-    try { localStorage.setItem('doremi_guru', nama || ''); } catch (e) {}
-    loadRiwayat();
-  }
-});
-
-// Disable guru dropdown saat pertama load (belum pilih siswa)
-sdGuruForm.setDisabled(true);
-
-// =====================================================================
-// UPDATE STATUS GURU BADGE
-// prefix: 'f' atau 'e'
-// namaGuru: nama guru yang dipilih sekarang
-// guruTetap: nama guru tetap siswa
-// =====================================================================
-function updateGuruStatusBadge(prefix, namaGuru, guruTetap) {
-  const wrap  = document.getElementById(prefix + '-guru-status-wrap');
-  const badge = document.getElementById(prefix + '-guru-status-badge');
-  const info  = document.getElementById(prefix + '-guru-tetap-info');
-
-  if (!namaGuru) {
-    wrap.className  = 'guru-status-wrap';
-    badge.className = 'guru-status-badge empty';
-    badge.textContent = '— Belum dipilih';
-    if (info) info.textContent = '';
-    return;
-  }
-
-  const isPengganti = guruTetap && namaGuru !== guruTetap;
-
-  if (isPengganti) {
-    wrap.className    = 'guru-status-wrap is-pengganti';
-    badge.className   = 'guru-status-badge pengganti';
-    badge.textContent = '🔄 Guru Pengganti';
-    if (info) info.textContent = 'Guru tetap: ' + guruTetap;
-  } else {
-    wrap.className    = 'guru-status-wrap is-tetap';
-    badge.className   = 'guru-status-badge tetap';
-    badge.textContent = '✓ Guru Tetap';
-    if (info) info.textContent = '';
-  }
-}
-
-// =====================================================================
-// FETCH TOTAL PERTEMUAN PAKET SISWA (dengan cache)
-// =====================================================================
-async function fetchPaketSiswa(namaSiswa) {
-  if (!namaSiswa) return;
-  if (paketSiswaCache[namaSiswa] !== undefined) return; // sudah di-cache
-
-  try {
-    const res  = await fetch(SCRIPT_URL + '?action=getPaketSiswa&nama=' + encodeURIComponent(namaSiswa));
-    const json = await res.json();
-    if (json.status === 'ok') {
-      paketSiswaCache[namaSiswa] = json.totalPertemuan || 0;
-    }
-  } catch (e) {
-    console.warn('Gagal fetch paket siswa:', e);
-  }
-}
-
-// =====================================================================
-// CEK & TAMPILKAN WARNING PERTEMUAN MELEBIHI PAKET
-// =====================================================================
-function cekWarningPertemuan(prefix, namaSiswa, pertemuanKe) {
-  const warningEl = document.getElementById(prefix + '-pertemuan-warning');
-  if (!warningEl) return;
-
-  const total = paketSiswaCache[namaSiswa] || 0;
-
-  if (total > 0 && pertemuanKe > total) {
-    warningEl.innerHTML = `
-      ⚠️ <strong>Pertemuan ke-${pertemuanKe} melebihi batas paket (${total}x).</strong><br>
-      Pastikan admin sudah catat pembayaran baru di History Bayar.<br>
-      <span style="opacity:0.8">Guru tetap bisa submit, tapi hubungi admin segera.</span>
-    `;
-    warningEl.style.display = 'block';
-  } else {
-    warningEl.style.display = 'none';
-  }
-}
-
-// =====================================================================
-// FETCH PERTEMUAN KE
-// prefix: 'f' atau 'e'
-// =====================================================================
-async function fetchPertemuan(nama, prefix) {
-  const boxId   = prefix + '-pertemuan-box';
-  const inputId = prefix + '-pertemuan';
-  const spinId  = prefix === 'f' ? 'f-pertemuan-spin' : null;
-
-  const box   = document.getElementById(boxId);
-  const input = document.getElementById(inputId);
-  const spin  = spinId ? document.getElementById(spinId) : null;
-  const warningEl = document.getElementById(prefix + '-pertemuan-warning');
-
-  // Tandai permintaan ini sebagai yang terbaru untuk prefix ini
-  const mySeq = ++pertemuanRequestSeq[prefix];
-
-  if (!nama) {
-    box.classList.remove('loaded');
-    input.value       = '';
-    if (prefix === 'f') input.disabled = true;
-    input.placeholder = 'Pilih nama siswa dahulu...';
-    input.style.color = 'var(--muted)';
-    if (warningEl) warningEl.style.display = 'none';
-    return;
-  }
-
-  box.classList.remove('loaded');
-  if (prefix === 'f') input.disabled = true;
-  input.value       = '';
-  input.placeholder = 'Mengambil data...';
-  if (spin) spin.style.display = 'block';
-
-  // Fetch paket & pertemuan bersamaan
-  await fetchPaketSiswa(nama);
-
-  try {
-    const res  = await fetch(SCRIPT_URL + '?action=getPertemuan&nama=' + encodeURIComponent(nama));
-    const json = await res.json();
-
-    // Kalau siswa sudah diganti lagi sebelum response ini datang, abaikan
-    if (mySeq !== pertemuanRequestSeq[prefix]) return;
-
-    if (json.status === 'ok') {
-      const pertemuanKe = json.pertemuanKe || 1;
-      input.value       = pertemuanKe;
-      input.disabled    = false;
-      input.placeholder = '';
-      input.style.color = 'var(--accent)';
-      box.classList.add('loaded');
-
-      cekWarningPertemuan(prefix, nama, pertemuanKe);
-
-      // Listener kalau diubah manual (di-overwrite tiap fetch sukses, aman)
-      input.oninput = () => {
-        const val = parseInt(input.value) || 0;
-        cekWarningPertemuan(prefix, nama, val);
-      };
-    } else {
-      input.placeholder = '⚠️ Gagal mengambil data';
-      input.disabled    = false;
-    }
-  } catch (err) {
-    if (mySeq !== pertemuanRequestSeq[prefix]) return;
-    input.placeholder = '⚠️ Gagal menghubungi server';
-    input.disabled    = false;
-  }
-
-  if (mySeq === pertemuanRequestSeq[prefix] && spin) spin.style.display = 'none';
-}
-
-// =====================================================================
-// FETCH GURU TETAP SISWA
-// Dipanggil saat siswa dipilih. Mengisi dropdown guru dengan auto-fill
-// guru tetap, dan mengaktifkan dropdown guru.
-// =====================================================================
-async function fetchGuruTetap(namaSiswa, prefix) {
-  const sdGuru = prefix === 'f' ? sdGuruForm : sdGuruEdit;
-  const spinEl = document.getElementById(prefix + '-guru-spin');
-  const badge  = document.getElementById(prefix + '-guru-status-badge');
-  const wrap   = document.getElementById(prefix + '-guru-status-wrap');
-  const info   = document.getElementById(prefix + '-guru-tetap-info');
-
-  const mySeq = ++guruRequestSeq[prefix];
-
-  if (!namaSiswa) {
-    sdGuru.reset();
-    if (prefix === 'f') sdGuru.setDisabled(true);
-    sdGuru.input.placeholder = 'Pilih nama siswa dahulu...';
-    wrap.className  = 'guru-status-wrap';
-    badge.className = 'guru-status-badge empty';
-    badge.textContent = '— Pilih siswa dahulu';
-    if (info) info.textContent = '';
-    return;
-  }
-
-  // Aktifkan dropdown guru, tampilkan loading
-  sdGuru.reset();
-  sdGuru.setDisabled(false);
-  sdGuru.input.placeholder = 'Mengambil guru tetap...';
-  if (spinEl) spinEl.style.display = 'block';
-  badge.className   = 'guru-status-badge empty';
-  badge.textContent = 'Memuat...';
-
-  // Cek cache dulu
-  if (guruTetapCache[namaSiswa] !== undefined) {
-    const guruTetap = guruTetapCache[namaSiswa];
-    if (spinEl) spinEl.style.display = 'none';
-    sdGuru.input.placeholder = 'Pilih guru...';
-    if (guruTetap) {
-      sdGuru.setValue(guruTetap);
-      updateGuruStatusBadge(prefix, guruTetap, guruTetap);
-    } else {
-      updateGuruStatusBadge(prefix, '', '');
-    }
-    return;
-  }
-
-  try {
-    const res  = await fetch(SCRIPT_URL + '?action=getGuruSiswa&nama=' + encodeURIComponent(namaSiswa));
-    const json = await res.json();
-
-    if (mySeq !== guruRequestSeq[prefix]) return; // siswa sudah ganti lagi
-
-    if (json.status === 'ok' && json.guruTetap) {
-      guruTetapCache[namaSiswa] = json.guruTetap;
-      sdGuru.input.placeholder  = 'Pilih guru...';
-      sdGuru.setValue(json.guruTetap);
-      updateGuruStatusBadge(prefix, json.guruTetap, json.guruTetap);
-    } else {
-      guruTetapCache[namaSiswa] = '';
-      sdGuru.input.placeholder = 'Pilih guru...';
-      updateGuruStatusBadge(prefix, '', '');
-    }
-  } catch (err) {
-    if (mySeq !== guruRequestSeq[prefix]) return;
-    sdGuru.input.placeholder = 'Pilih guru...';
-    updateGuruStatusBadge(prefix, '', '');
-  }
-
-  if (mySeq === guruRequestSeq[prefix] && spinEl) spinEl.style.display = 'none';
-}
-
-// =====================================================================
-// INIT
-// =====================================================================
-document.getElementById('f-tanggal').valueAsDate = new Date();
-document.getElementById('e-tanggal').valueAsDate = new Date();
-loadSiswa();
-loadGuru();
-
-async function loadSiswa() {
-  try {
-    const res  = await fetch(SCRIPT_URL + '?action=getSiswa');
-    const json = await res.json();
-    allSiswa = (json.siswa || []).sort((a, b) =>
-      a.nama.localeCompare(b.nama, 'id', { sensitivity: 'base' })
-    );
-    sdForm.setItems(allSiswa);
-    sdEdit.setItems(allSiswa);
-  } catch (e) {
-    console.warn('Gagal load siswa:', e);
-  }
-}
-
-async function loadGuru() {
-  try {
-    const res  = await fetch(SCRIPT_URL + '?action=getGuru');
-    const json = await res.json();
-    allGuru = (json.guru || []).sort((a, b) =>
-      a.nama.localeCompare(b.nama, 'id', { sensitivity: 'base' })
-    );
-    sdGuruForm.setItems(allGuru);
-    sdGuruEdit.setItems(allGuru);
-    sdGuruRiwayat.setItems(allGuru);
-  } catch (e) {
-    console.warn('Gagal load guru:', e);
-  }
-}
-
-// =====================================================================
-// SEMBUNYIKAN PERTEMUAN KE JIKA STATUS IZIN
-// =====================================================================
-function setPertemuanVisibility(prefix, isIzin) {
-  const boxId = prefix + '-pertemuan-box';
-  const box   = document.getElementById(boxId);
-  const hint  = box ? box.nextElementSibling : null;
-
-  if (!box) return;
-
-  if (isIzin) {
-    box.style.opacity       = '0.35';
-    box.style.pointerEvents = 'none';
-    if (hint) hint.style.display = 'none';
-  } else {
-    box.style.opacity       = '1';
-    box.style.pointerEvents = '';
-    if (hint) hint.style.display = '';
-  }
-}
-
-// Form tambah baru
-document.querySelectorAll('input[name="status"]').forEach(radio => {
-  radio.addEventListener('change', () => {
-    setPertemuanVisibility('f', radio.value === 'Izin' && radio.checked);
-  });
-});
-
-// Form edit
-document.querySelectorAll('input[name="status-edit"]').forEach(radio => {
-  radio.addEventListener('change', () => {
-    setPertemuanVisibility('e', radio.value === 'Izin' && radio.checked);
-  });
-});
-
-// =====================================================================
-// NAVIGASI VIEW
-// =====================================================================
-function showView(id) {
-  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-  document.getElementById('view-' + id).classList.add('active');
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-}
-
-function goNew() {
-  sdForm.reset();
-  sdGuruForm.reset();
-  sdGuruForm.setDisabled(true);
-  sdGuruForm.input.placeholder = 'Pilih nama siswa dahulu...';
-
-  document.querySelectorAll('input[name="status"]').forEach(r => r.checked = false);
-  document.getElementById('f-keterangan').value = '';
-  ['f-foto', 'f-video'].forEach(id => {
-    document.getElementById(id).value = '';
-    document.getElementById('prev-' + id).classList.remove('show');
-  });
-  document.getElementById('f-tanggal').valueAsDate = new Date();
-  document.getElementById('alertBox').style.display = 'none';
-
-  const box    = document.getElementById('f-pertemuan-box');
-  const finput = document.getElementById('f-pertemuan');
-  box.classList.remove('loaded');
-  finput.value       = '';
-  finput.disabled    = true;
-  finput.placeholder = 'Pilih nama siswa dahulu...';
-  finput.style.color = 'var(--muted)';
-
-  // Sembunyikan warning pertemuan yang mungkin masih tampil
-  const warningEl = document.getElementById('f-pertemuan-warning');
-  if (warningEl) warningEl.style.display = 'none';
-
-  // Reset tampilan Pertemuan Ke (kalau sebelumnya Izin)
-  setPertemuanVisibility('f', false);
-
-  // Reset status guru badge
-  updateGuruStatusBadge('f', '', '');
-
-  showView('form');
-}
-
-function goSuccess() { showView('success'); }
-
-function goEdit() {
-  if (!lastSubmitted) return;
-  const d = lastSubmitted;
-
-  document.getElementById('e-tanggal').value    = d.tanggal;
-  document.getElementById('e-keterangan').value = d.keterangan || '';
-
-  sdEdit.setValue(d.nama);
-  sdGuruEdit.setValue(d.namaGuru || '');
-
-  // Set badge status guru di edit view
-  const guruTetap = guruTetapCache[d.nama] || '';
-  updateGuruStatusBadge('e', d.namaGuru || '', guruTetap);
-
-  const r = document.querySelector(`input[name="status-edit"][value="${d.status}"]`);
-  if (r) r.checked = true;
-  setPertemuanVisibility('e', d.status === 'Izin');
-
-  document.getElementById('e-pertemuan').value = d.pertemuanKe || 1;
-  cekWarningPertemuan('e', d.nama, d.pertemuanKe || 1);
-
-  ['e-foto', 'e-video'].forEach(id => {
-    document.getElementById(id).value = '';
-    document.getElementById('prev-' + id).classList.remove('show');
-  });
-
-  document.getElementById('editAlertBox').style.display = 'none';
-  showView('edit');
-}
-
-// =====================================================================
-// RIWAYAT ABSEN GURU
-// =====================================================================
-function escHtml(s) {
-  return String(s || '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-}
-
-function fmtTanggal(str) {
-  const [y, m, d] = String(str).split('-').map(Number);
-  if (!y) return str;
-  return new Date(y, m - 1, d).toLocaleDateString('id-ID', {
-    weekday: 'short', day: 'numeric', month: 'short', year: 'numeric'
-  });
-}
-
-function goRiwayat() {
-  const bulanEl = document.getElementById('r-bulan');
-  if (!bulanEl.value) {
-    const n = new Date();
-    bulanEl.value = n.getFullYear() + '-' + String(n.getMonth() + 1).padStart(2, '0');
-  }
-
-  // Isi otomatis nama guru: dari absen terakhir, atau dari pilihan tersimpan di HP
-  if (!sdGuruRiwayat.getValue()) {
-    let g = '';
-    try { g = (lastSubmitted && lastSubmitted.namaGuru) || localStorage.getItem('doremi_guru') || ''; } catch (e) {}
-    if (g) sdGuruRiwayat.setValue(g);
-  }
-
-  showView('riwayat');
-  loadRiwayat();
-}
-
-async function loadRiwayat() {
-  const guru  = sdGuruRiwayat.getValue();
-  const bulan = document.getElementById('r-bulan').value;
-  const list  = document.getElementById('r-list');
-  const sum   = document.getElementById('r-summary');
-
-  if (!guru) {
-    sum.style.display = 'none';
-    list.innerHTML = '<div class="r-empty">Pilih nama guru dahulu.</div>';
-    return;
-  }
-
-  const seq = ++riwayatSeq;
-  list.innerHTML = '<div class="r-empty">Memuat riwayat...</div>';
-
-  try {
-    const res  = await fetch(SCRIPT_URL + '?action=getRiwayatAbsen&guru=' + encodeURIComponent(guru) + '&bulan=' + encodeURIComponent(bulan));
-    const json = await res.json();
-    if (seq !== riwayatSeq) return;
-
-    if (json.status !== 'ok') {
-      list.innerHTML = '<div class="r-empty">❌ ' + escHtml(json.message || 'Gagal memuat') + '</div>';
-      return;
-    }
-
-    const r = json.ringkasan;
-    sum.innerHTML =
-      `<div class="r-sum-box"><div class="r-sum-num">${r.total}</div><div class="r-sum-lbl">TOTAL</div></div>` +
-      `<div class="r-sum-box"><div class="r-sum-num" style="color:var(--green)">${r.hadir}</div><div class="r-sum-lbl">HADIR</div></div>` +
-      `<div class="r-sum-box"><div class="r-sum-num" style="color:var(--amber)">${r.izin}</div><div class="r-sum-lbl">IZIN</div></div>` +
-      `<div class="r-sum-box"><div class="r-sum-num" style="color:var(--red)">${r.alpha}</div><div class="r-sum-lbl">ALPHA</div></div>`;
-    sum.style.display = 'grid';
-
-    if (!json.riwayat.length) {
-      list.innerHTML = '<div class="r-empty">Belum ada absen tercatat di bulan ini.</div>';
-      return;
-    }
-
-    list.innerHTML = json.riwayat.map(x => `
-      <div class="r-item">
-        <div class="r-top">
-          <span class="r-date">${fmtTanggal(x.tanggal)}</span>
-          ${statusBadge(x.status)}
-        </div>
-        <div class="r-name">${escHtml(x.nama)}</div>
-        <div class="r-meta">
-          ${x.pertemuanKe ? `<span class="badge badge-pertemuan">Ke-${x.pertemuanKe}</span>` : ''}
-          ${guruBadge(x.statusGuru)}
-        </div>
-        ${x.keterangan ? `<div class="r-ket">${escHtml(x.keterangan)}</div>` : ''}
-      </div>`).join('');
-
-  } catch (err) {
-    if (seq !== riwayatSeq) return;
-    list.innerHTML = '<div class="r-empty">❌ Gagal menghubungi server.</div>';
-  }
-}
-
-// =====================================================================
-// FILE UPLOAD
-// =====================================================================
-function onFileChange(inputId) {
-  const input = document.getElementById(inputId);
-  if (!input.files[0]) return;
-  const isVideo = input.accept.includes('video');
-  const maxMB   = isVideo ? 50 : 5;
-  if (input.files[0].size > maxMB * 1024 * 1024) {
-    alert('File terlalu besar! Maks ' + maxMB + ' MB');
-    input.value = '';
-    return;
-  }
-  document.getElementById('prev-' + inputId + '-name').textContent = input.files[0].name;
-  document.getElementById('prev-' + inputId).classList.add('show');
-}
-
-function toBase64(file) {
-  return new Promise((res, rej) => {
-    const r = new FileReader();
-    r.onload  = () => res(r.result.split(',')[1]);
-    r.onerror = () => rej();
-    r.readAsDataURL(file);
-  });
-}
-
-// =====================================================================
-// ALERT
-// =====================================================================
-function showAlert(boxId, msg, type) {
-  const b = document.getElementById(boxId);
-  b.className     = 'alert ' + type;
-  b.textContent   = msg;
-  b.style.display = 'flex';
-}
-
-// =====================================================================
-// HITUNG STATUS GURU
-// =====================================================================
-function getStatusGuru(namaGuru, namaSiswa) {
-  const guruTetap = guruTetapCache[namaSiswa] || '';
-  if (!guruTetap || namaGuru === guruTetap) return 'Guru Tetap';
-  return 'Guru Pengganti';
-}
-
-// =====================================================================
-// BUILD SUMMARY
-// =====================================================================
-function statusBadge(s) {
-  const cls = { Hadir: 'badge-hadir', Izin: 'badge-izin', Alpha: 'badge-alpha' };
-  return `<span class="badge ${cls[s] || ''}">${s}</span>`;
-}
-
-function guruBadge(statusGuru) {
-  if (statusGuru === 'Guru Pengganti')
-    return `<span class="badge badge-guru-pengganti">🔄 Guru Pengganti</span>`;
-  return `<span class="badge badge-guru-tetap">✓ Guru Tetap</span>`;
-}
-
-function buildSummary(d) {
-  const rows = [
-    ['ID Siswa',     d.idSiswa ? `<span class="badge badge-id">${d.idSiswa}</span>` : '—'],
-    ['Tanggal',      d.tanggal],
-    ['Nama',         d.nama],
-    ['Pertemuan Ke', `<span class="badge badge-pertemuan">Ke-${d.pertemuanKe || '—'}</span>`],
-    ['Status',       statusBadge(d.status)],
-    ['Guru Mengajar', d.namaGuru || '—'],
-    ['Status Guru',  d.statusGuru ? guruBadge(d.statusGuru) : '—'],
-    ['Keterangan',   d.keterangan || '—'],
-    ['Foto',         d.fotoUrl  ? `<a href="${d.fotoUrl}"  target="_blank" style="color:var(--accent)">Lihat foto ↗</a>`  : '—'],
-    ['Video',        d.videoUrl ? `<a href="${d.videoUrl}" target="_blank" style="color:var(--accent)">Lihat video ↗</a>` : '—'],
-  ];
-  return rows.map(([k, v]) =>
-    `<div class="data-row"><span class="data-key">${k}</span><span class="data-val">${v}</span></div>`
-  ).join('');
-}
-
-// =====================================================================
-// SUBMIT BARU
-// =====================================================================
-async function submitForm() {
-  const tanggal    = document.getElementById('f-tanggal').value;
-  const nama       = sdForm.getValue();
-  const idSiswa    = sdForm.getIdSiswa();
-  const namaGuru   = sdGuruForm.getValue();
-  const statusEl   = document.querySelector('input[name="status"]:checked');
-  const keterangan = document.getElementById('f-keterangan').value.trim();
-  const pertemuan  = parseInt(document.getElementById('f-pertemuan').value) || 1;
-  const fotoFile   = document.getElementById('f-foto').files[0];
-  const videoFile  = document.getElementById('f-video').files[0];
-
-  document.getElementById('alertBox').style.display = 'none';
-
-  if (!tanggal)  { showAlert('alertBox', '⚠️ Tanggal wajib diisi.', 'error'); return; }
-  if (!nama)     { showAlert('alertBox', '⚠️ Nama siswa wajib dipilih.', 'error'); return; }
-  if (!namaGuru) { showAlert('alertBox', '⚠️ Guru yang mengajar wajib dipilih.', 'error'); return; }
-  if (!statusEl) { showAlert('alertBox', '⚠️ Status kehadiran wajib dipilih.', 'error'); return; }
-
-  const statusGuru = getStatusGuru(namaGuru, nama);
-
-  setLoading(true, 'submit');
-
-  const payload = {
-    tanggal,
-    nama,
-    idSiswa,
-    namaGuru,
-    statusGuru,
-    status      : statusEl.value,
-    keterangan,
-    pertemuanKe : pertemuan || 1
-  };
-
-  try {
-    if (fotoFile)  { payload.foto = await toBase64(fotoFile); payload.fotoName = fotoFile.name; payload.fotoMime = fotoFile.type; }
-    if (videoFile) { payload.video = await toBase64(videoFile); payload.videoName = videoFile.name; payload.videoMime = videoFile.type; }
-
-    const res  = await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(payload) });
-    const json = await res.json();
-
-    if (json.status === 'ok') {
-      lastSubmitted = {
-        ...payload,
-        pertemuanKe : json.pertemuanKe || pertemuan || 1,
-        idSiswa     : json.idSiswa     || idSiswa   || '',
-        fotoUrl     : json.fotoUrl  || '',
-        videoUrl    : json.videoUrl || ''
-      };
-      lastRowIndex = json.rowIndex || null;
-
-      // Simpan nama guru di HP supaya riwayat terisi otomatis
-      try { localStorage.setItem('doremi_guru', namaGuru); } catch (e) {}
-
-      document.getElementById('success-sub').textContent =
-        'ID: ' + (json.id || '—') + ' · Tersimpan di spreadsheet';
-      document.getElementById('summary-box').innerHTML = buildSummary(lastSubmitted);
-      showView('success');
-    } else {
-      showAlert('alertBox', '❌ ' + (json.message || 'Gagal menyimpan'), 'error');
-    }
-  } catch (err) {
-    showAlert('alertBox', '❌ Gagal menghubungi server. Cek URL Apps Script.', 'error');
-  }
-
-  setLoading(false, 'submit');
-}
-
-// =====================================================================
-// UPDATE / EDIT
-// =====================================================================
-async function updateForm() {
-  if (!lastRowIndex) {
-    showAlert('editAlertBox', '⚠️ Tidak bisa edit: baris tidak ditemukan.', 'error');
-    return;
-  }
-
-  const tanggal    = document.getElementById('e-tanggal').value;
-  const nama       = sdEdit.getValue();
-  const namaGuru   = sdGuruEdit.getValue();
-  const statusEl   = document.querySelector('input[name="status-edit"]:checked');
-  const keterangan = document.getElementById('e-keterangan').value.trim();
-  const pertemuan  = parseInt(document.getElementById('e-pertemuan').value) || 1;
-  const fotoFile   = document.getElementById('e-foto').files[0];
-  const videoFile  = document.getElementById('e-video').files[0];
-
-  document.getElementById('editAlertBox').style.display = 'none';
-
-  if (!tanggal)  { showAlert('editAlertBox', '⚠️ Tanggal wajib diisi.', 'error'); return; }
-  if (!nama)     { showAlert('editAlertBox', '⚠️ Nama siswa wajib dipilih.', 'error'); return; }
-  if (!namaGuru) { showAlert('editAlertBox', '⚠️ Guru yang mengajar wajib dipilih.', 'error'); return; }
-  if (!statusEl) { showAlert('editAlertBox', '⚠️ Status wajib dipilih.', 'error'); return; }
-
-  const statusGuru = getStatusGuru(namaGuru, nama);
-
-  setLoading(true, 'edit');
-
-  const payload = {
-    action      : 'editAbsensi',
-    rowIndex    : lastRowIndex,
-    tanggal,
-    nama,
-    namaGuru,
-    statusGuru,
-    status      : statusEl.value,
-    keterangan,
-    pertemuanKe : pertemuan
-  };
-
-  try {
-    if (fotoFile)  { payload.foto = await toBase64(fotoFile); payload.fotoName = fotoFile.name; payload.fotoMime = fotoFile.type; }
-    if (videoFile) { payload.video = await toBase64(videoFile); payload.videoName = videoFile.name; payload.videoMime = videoFile.type; }
-
-    const res  = await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(payload) });
-    const json = await res.json();
-
-    if (json.status === 'ok') {
-      lastSubmitted = {
-        ...payload,
-        pertemuanKe : json.pertemuanKe || pertemuan,
-        idSiswa     : json.idSiswa     || lastSubmitted.idSiswa || '',
-        fotoUrl     : json.fotoUrl  || lastSubmitted.fotoUrl  || '',
-        videoUrl    : json.videoUrl || lastSubmitted.videoUrl || ''
-      };
-      document.getElementById('summary-box').innerHTML = buildSummary(lastSubmitted);
-      showView('success');
-    } else {
-      showAlert('editAlertBox', '❌ ' + (json.message || 'Gagal menyimpan perubahan'), 'error');
-    }
-  } catch (err) {
-    showAlert('editAlertBox', '❌ Gagal menghubungi server.', 'error');
-  }
-
-  setLoading(false, 'edit');
-}
-
-// =====================================================================
-// LOADING STATE
-// =====================================================================
-function setLoading(on, mode) {
-  if (mode === 'submit') {
-    document.getElementById('btnSubmit').disabled         = on;
-    document.getElementById('spinner').style.display      = on ? 'block' : 'none';
-    document.getElementById('btn-text').textContent       = on ? 'Mengirim...' : '📤 Kirim Presensi';
-  } else {
-    document.getElementById('btnUpdate').disabled         = on;
-    document.getElementById('spinner-edit').style.display = on ? 'block' : 'none';
-    document.getElementById('btn-edit-text').textContent  = on ? 'Menyimpan...' : '💾 Simpan Perubahan';
-  }
-}
-</script>
-</body>
-</html>
+<!-- ===== BAGIAN 2 (blok <script> ... </script></body></html>) DITEMPEL DI SINI ===== -->
